@@ -1,0 +1,50 @@
+{
+  "keywords": "jazz",
+  "venues": [
+    {
+      "address": "300 South Brevard Street",
+      "city": "Charlotte",
+      "country": "USA",
+      "imageFocalPointX": 0.5,
+      "imageFocalPointY": 0.5,
+      "organization": "Middle C Jazz",
+      "state": "NC",
+      "venueId": 17987,
+      "venueName": "Middle C Jazz Club",
+      "venueSaleUrl": "/ticket/v/17987/middle-c-jazz-club"
+    }
+  ],
+  "events": [
+    {
+      "address": "301 North Water Street",
+      "allInPrice": false,
+      "categoryId": 2,
+      "categoryName": "Concerts",
+      "city": "Wilmington",
+      "country": "USA",
+      "dateTime": "2027-02-05T00:30:00Z",
+      "directSaleUrl": "/ticket/p/39004863/north-carolina-jazz-festival-thursday-night-wilmington-north-carolina-jazz-festival-hotel-ballast-wilmington",
+      "directSaleUrlAbsolutely": "https://www.etix.com/ticket/p/39004863/north-carolina-jazz-festival-thursday-night-wilmington-north-carolina-jazz-festival-hotel-ballast-wilmington",
+      "eventId": 39004863,
+      "eventName": "North Carolina Jazz Festival - Thursday Night",
+      "imageFocalPointX": 0.5,
+      "imageFocalPointY": 0.5,
+      "imageUrl": "https://cdn.etix.com/etix/performance-image/performance_image_150w/0a633e9430006eefbc2f8753193f9430.jpg",
+      "orderFeeRange": "",
+      "state": "NC",
+      "type": "PERFORMANCE",
+      "venueId": 4332,
+      "venueName": "North Carolina Jazz Festival - Hotel Ballast Wilmington",
+      "venueSaleUrl": "/ticket/v/4332/north-carolina-jazz-festival-hotel-ballast-wilmington",
+      "venueSaleUrlAbsolutely": "https://www.etix.com/ticket/v/4332/north-carolina-jazz-festival-hotel-ballast-wilmington"
+    }
+  ],
+  "performers": [
+    {
+      "id": 103251,
+      "name": "Marion Meadows",
+      "muzookaId": "mzoMB0Ym8l",
+      "imageUrl": "https://www.etix.com/ticket/api/online/search/muzooka/mzoMB0Ym8l/image"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "etix-mcp",
+  "owner": {
+    "name": "Chris Hall",
+    "email": "chris.c.hall@gmail.com"
+  },
+  "metadata": {
+    "description": "MCP server for Etix — search events, venues & performers and fetch event details. Routes through the user's signed-in etix.com tab via the fetchproxy browser extension, reusing the user's existing session.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "etix-mcp",
+      "displayName": "Etix",
+      "source": "./",
+      "description": "MCP server for Etix — search events, venues & performers and fetch event details",
+      "version": "0.1.0",
+      "author": {
+        "name": "Chris Hall"
+      },
+      "homepage": "https://github.com/chrischall/etix-mcp",
+      "repository": "https://github.com/chrischall/etix-mcp",
+      "license": "MIT",
+      "keywords": [
+        "etix",
+        "events",
+        "tickets",
+        "concerts",
+        "mcp"
+      ],
+      "category": "productivity"
+    }
+  ]
+}

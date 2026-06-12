@@ -1,0 +1,22 @@
+{
+  "name": "etix-mcp",
+  "displayName": "Etix",
+  "version": "0.1.0",
+  "description": "Etix event discovery for Claude — search events, venues & performers and fetch event details",
+  "author": {
+    "name": "Chris Hall",
+    "email": "chris.c.hall@gmail.com"
+  },
+  "homepage": "https://github.com/chrischall/etix-mcp",
+  "repository": "https://github.com/chrischall/etix-mcp",
+  "license": "MIT",
+  "keywords": [
+    "etix",
+    "events",
+    "tickets",
+    "concerts",
+    "mcp"
+  ],
+  "skills": "./SKILL.md",
+  "mcp": "./.mcp.json"
+}

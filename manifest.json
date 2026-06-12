@@ -1,0 +1,58 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/dxt/main/dist/mcpb-manifest.schema.json",
+  "manifest_version": "0.3",
+  "name": "etix-mcp",
+  "display_name": "Etix",
+  "version": "0.1.0",
+  "description": "Etix event discovery for Claude — search events, venues & performers and fetch event details",
+  "author": {
+    "name": "Chris Chall",
+    "email": "chris.c.hall@gmail.com",
+    "url": "https://github.com/chrischall"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chrischall/etix-mcp"
+  },
+  "homepage": "https://github.com/chrischall/etix-mcp",
+  "support": "https://github.com/chrischall/etix-mcp/issues",
+  "license": "MIT",
+  "keywords": [
+    "etix",
+    "events",
+    "tickets",
+    "concerts"
+  ],
+  "server": {
+    "type": "node",
+    "entry_point": "dist/bundle.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/dist/bundle.js"
+      ]
+    }
+  },
+  "tools": [
+    {
+      "name": "etix_search",
+      "description": "Search Etix events, venues, and performers by keyword"
+    },
+    {
+      "name": "etix_get_event",
+      "description": "Fetch an Etix event/performance's details by event id"
+    },
+    {
+      "name": "etix_get_venue",
+      "description": "Fetch an Etix venue and its upcoming events by venue id"
+    },
+    {
+      "name": "etix_find_location",
+      "description": "Resolve a city or postal code to coordinates for location-based browsing"
+    },
+    {
+      "name": "etix_healthcheck",
+      "description": "Verify the fetchproxy bridge end-to-end — no auth required"
+    }
+  ]
+}
