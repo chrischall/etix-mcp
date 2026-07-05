@@ -3,7 +3,7 @@
   "manifest_version": "0.3",
   "name": "etix-mcp",
   "display_name": "Etix",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Etix event discovery for Claude — search events, venues & performers and fetch event details",
   "author": {
     "name": "Chris Chall",
