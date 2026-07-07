@@ -15,6 +15,7 @@
 // diffed against the real bytes, not guessed — see docs/ETIX-API.md.
 
 import { parse, type HTMLElement } from 'node-html-parser';
+import { findJsonLdEntity, ogContent } from '@chrischall/mcp-utils';
 
 const BASE = 'https://www.etix.com';
 
@@ -125,44 +126,6 @@ export function extractDataLayer(html: string): Record<string, string> {
   return out;
 }
 
-/** Extract the schema.org JSON-LD `mainEntity` (the Event) from a
- *  performance page. Returns null if absent or unparseable. */
-function extractEventJsonLd(html: string): Record<string, unknown> | null {
-  const blocks = html.matchAll(
-    /<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi
-  );
-  for (const b of blocks) {
-    try {
-      const parsed = JSON.parse(b[1].trim()) as Record<string, unknown>;
-      const main = (parsed.mainEntity ?? parsed) as Record<string, unknown>;
-      if (main && (main['@type'] === 'Event' || main.startDate || main.name)) {
-        return main;
-      }
-    } catch {
-      // try the next block
-    }
-  }
-  return null;
-}
-
-function ogContent(html: string, prop: string): string | undefined {
-  // Attribute order varies; match property=…content=… and content=…property=….
-  const a = html.match(
-    new RegExp(
-      `<meta[^>]*property=["']${prop}["'][^>]*content=["']([^"']*)["']`,
-      'i'
-    )
-  );
-  if (a) return a[1];
-  const b = html.match(
-    new RegExp(
-      `<meta[^>]*content=["']([^"']*)["'][^>]*property=["']${prop}["']`,
-      'i'
-    )
-  );
-  return b ? b[1] : undefined;
-}
-
 // ─── performance / event detail ─────────────────────────────────────────────
 
 export interface EventVenue {
@@ -203,7 +166,10 @@ export interface EventDetail {
 }
 
 export function parseEventDetail(html: string, eventId: number): EventDetail {
-  const main = extractEventJsonLd(html);
+  // The schema.org Event hides inside a `WebPage.mainEntity`; the shared
+  // `findJsonLdEntity` walks blocks, `@graph`, and `mainEntity` for the
+  // `@type === 'Event'` node (consolidates etix's local `extractEventJsonLd`).
+  const main = findJsonLdEntity(html, 'Event');
   if (!main) {
     throw new Error(
       `Etix event ${eventId}: could not parse the event page — no schema.org JSON-LD ` +
