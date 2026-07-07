@@ -1,6 +1,6 @@
 {
   "name": "etix-mcp",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "mcpName": "io.github.chrischall/etix-mcp",
   "description": "Etix MCP server for Claude — search events, venues & performers and fetch event details",
   "author": "Claude Code (AI) <https://www.anthropic.com/claude>",
