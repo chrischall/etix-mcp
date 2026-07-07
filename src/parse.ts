@@ -15,7 +15,7 @@
 // diffed against the real bytes, not guessed — see docs/ETIX-API.md.
 
 import { parse, type HTMLElement } from 'node-html-parser';
-import { findJsonLdEntity, ogContent } from '@chrischall/mcp-utils';
+import { findJsonLdEntity, ogContent } from '@chrischall/mcp-utils/scrape';
 
 const BASE = 'https://www.etix.com';
 

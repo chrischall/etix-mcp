@@ -18,7 +18,8 @@ import { BotWallError, type EtixClient } from '../client.js';
  *    `/robots.txt` surfaces as a `BotWallError`.
  *  - `classifyThrown` maps that `BotWallError` to a `bot_wall` kind with
  *    DataDome-clear copy (the one error condition etix cares about that the
- *    generic ladder can't name).
+ *    generic ladder can't name), and lifts the wall's structured `vendor` +
+ *    `retryAfterSeconds` into `error.detail` via 0.12's detail hook.
  *  - `hints.ok` keeps etix's DataDome-flavored "healthy bridge" copy.
  */
 
@@ -44,10 +45,17 @@ export function registerHealthcheckTools(
       status: () => client.bridgeStatus(),
     },
     probeFn: (path) => client.fetchHtml(path),
-    classifyThrown: (err) =>
-      err instanceof BotWallError
-        ? { kind: 'bot_wall', hint: DATADOME_HINT }
-        : undefined,
+    classifyThrown: (err) => {
+      if (!(err instanceof BotWallError)) return undefined;
+      // Keep the human-facing next step in `hint`, but surface the wall's
+      // structured diagnostics (vendor + suggested back-off) into
+      // `error.detail` rather than discarding them — 0.12's detail hook.
+      const detail: Record<string, unknown> = {
+        retry_after_seconds: err.retryAfterSeconds,
+      };
+      if (err.vendor !== undefined) detail.vendor = err.vendor;
+      return { kind: 'bot_wall', hint: DATADOME_HINT, detail };
+    },
     hints: {
       ok:
         `Bridge round-tripped ${PROBE_PATH} successfully. If real tools still ` +

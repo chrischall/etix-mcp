@@ -99,4 +99,19 @@ describe('etix_healthcheck', () => {
     expect(data.hint).toMatch(/DataDome/);
     await h.close();
   });
+
+  it('surfaces the bot-wall vendor and retry-after into error.detail', async () => {
+    const fetchHtml = vi
+      .fn()
+      .mockRejectedValue(new BotWallError('/robots.txt', 45, { vendor: 'DataDome' }));
+    const h = await createTestHarness((server) =>
+      registerHealthcheckTools(server, stubClient(fetchHtml))
+    );
+    const res = await h.callTool('etix_healthcheck', {});
+    const data = parseToolResult(res);
+    expect(data.error.kind).toBe('bot_wall');
+    // Structured diagnostics belong in error.detail, not baked into the hint.
+    expect(data.error.detail).toEqual({ vendor: 'DataDome', retry_after_seconds: 45 });
+    await h.close();
+  });
 });
