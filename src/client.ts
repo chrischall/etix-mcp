@@ -12,7 +12,7 @@
 // When a response IS the bot-wall (the user's tab lost its DataDome
 // clearance), classifyBotWall catches it and we raise a typed,
 // actionable BotWallError instead of handing a captcha page to a parser.
-import { formatApiError } from '@chrischall/mcp-utils';
+import { formatApiError, BotWallError } from '@chrischall/mcp-utils';
 import { classifyBotWall } from '@chrischall/mcp-utils/fetchproxy';
 import type {
   BridgeProbeResult,
@@ -21,21 +21,10 @@ import type {
   EtixTransport,
 } from './transport.js';
 
-/** Raised when a response is a DataDome (or other) bot-wall interstitial
- *  rather than real content — the signed-in etix.com tab needs a refresh. */
-export class BotWallError extends Error {
-  readonly vendor: string;
-  constructor(vendor: string, path: string) {
-    super(
-      `Etix returned a ${vendor} bot-wall interstitial for ${path} instead of content. ` +
-        `Open etix.com in your browser, let the page finish loading (so the ${vendor} ` +
-        `check clears), then retry. Requests ride your signed-in etix.com tab — if that ` +
-        `tab is challenged, every tool call is too.`
-    );
-    this.name = 'BotWallError';
-    this.vendor = vendor;
-  }
-}
+// The shared `BotWallError` (carries `retryAfterSeconds` + `vendor`) replaces
+// etix's local copy. Re-exported so existing `import { BotWallError } from
+// './client.js'` sites (and tests) keep resolving it from here.
+export { BotWallError } from '@chrischall/mcp-utils';
 
 export interface EtixClientOptions {
   /** Transport used to relay fetches to the user's browser. */
@@ -123,7 +112,11 @@ export class EtixClient {
   private throwIfBotWall(result: FetchResult, path: string): void {
     const verdict = classifyBotWall(result.body, result.status);
     if (verdict.blocked) {
-      throw new BotWallError(verdict.vendor ?? 'bot-wall', path);
+      throw new BotWallError(
+        path,
+        undefined,
+        verdict.vendor ? { vendor: verdict.vendor } : undefined
+      );
     }
   }
 }

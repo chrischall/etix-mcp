@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, afterAll } from 'vitest';
-import type { EtixClient } from '../../src/client.js';
+import { BotWallError, type EtixClient } from '../../src/client.js';
 import { registerHealthcheckTools } from '../../src/tools/healthcheck.js';
 import { classifyBridgeError } from '../../src/transport-fetchproxy.js';
-import type { BridgeProbeResult } from '../../src/transport.js';
+import type { BridgeProbeResult, BridgeStatus } from '../../src/transport.js';
 import { createTestHarness, parseToolResult } from '../helpers.js';
 
+/** Snake-cased projection the fetchproxy probe returns as `probeResult.bridge`. */
 const BRIDGE = {
   role: 'host' as const,
   port: 37149,
@@ -15,6 +16,9 @@ const BRIDGE = {
   last_failure_reason: null,
   consecutive_failures: 0,
 };
+
+/** camelCased `BridgeHealth` the shared tool reads for `last_extension_message_at`. */
+const STATUS = { lastExtensionMessageAt: 1_700_000_000_000 } as unknown as BridgeStatus;
 
 /** Faithfully reproduce the real client.runProbe contract: run the probe
  *  fn, time it, classify any throw, and project a snake-cased bridge. */
@@ -41,7 +45,8 @@ function stubClient(fetchHtml: ReturnType<typeof vi.fn>): EtixClient {
         }
       }
     );
-  return { fetchHtml, runProbe } as unknown as EtixClient;
+  const bridgeStatus = vi.fn().mockReturnValue(STATUS);
+  return { fetchHtml, runProbe, bridgeStatus } as unknown as EtixClient;
 }
 
 let harness: Awaited<ReturnType<typeof createTestHarness>>;
@@ -60,6 +65,8 @@ describe('etix_healthcheck', () => {
     expect(fetchHtml).toHaveBeenCalledWith('/robots.txt');
     expect(data.ok).toBe(true);
     expect(data.bridge.role).toBe('host');
+    // Shared tool additionally surfaces the extension-liveness counter.
+    expect(data.bridge.last_extension_message_at).toBe(1_700_000_000_000);
     expect(data.probe.url).toBe('https://www.etix.com/robots.txt');
     expect(data.probe.body_length).toBe('User-agent: *'.length);
     expect(data.hint).toMatch(/DataDome/);
@@ -75,6 +82,21 @@ describe('etix_healthcheck', () => {
     expect(data.ok).toBe(false);
     expect(data.error).toBeDefined();
     expect(data.hint.length).toBeGreaterThan(0);
+    await h.close();
+  });
+
+  it('classifies a DataDome bot-wall on the probe as kind=bot_wall with clear copy', async () => {
+    const fetchHtml = vi
+      .fn()
+      .mockRejectedValue(new BotWallError('/robots.txt', undefined, { vendor: 'DataDome' }));
+    const h = await createTestHarness((server) =>
+      registerHealthcheckTools(server, stubClient(fetchHtml))
+    );
+    const res = await h.callTool('etix_healthcheck', {});
+    const data = parseToolResult(res);
+    expect(data.ok).toBe(false);
+    expect(data.error.kind).toBe('bot_wall');
+    expect(data.hint).toMatch(/DataDome/);
     await h.close();
   });
 });
