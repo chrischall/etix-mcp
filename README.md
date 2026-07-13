@@ -20,7 +20,7 @@ Etix fronts its consumer site with a DataDome interstitial that a server-side fe
 
 ## Setup
 
-See [SKILL.md](SKILL.md) for full install steps: add the server to your MCP config, install the shared fetchproxy extension, open etix.com, and approve the one-time pairing. Then run `etix_healthcheck`.
+See [skills/etix/SKILL.md](skills/etix/SKILL.md) for full install steps: add the server to your MCP config, install the shared fetchproxy extension, open etix.com, and approve the one-time pairing. Then run `etix_healthcheck`.
 
 ## Development
 
