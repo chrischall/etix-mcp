@@ -90,15 +90,20 @@ jq '{name, url, start_date: .startDate, status: .eventStatus,
 ```
 
 Pull the numeric org id + cobrand out of the page's `dataLayer` (it's
-single-quoted `'key' : 'value'` pairs, not JSON, so `jq` can't touch it
-directly):
+single-quoted `'key' : 'value'` pairs spread across multiple lines, not
+JSON, so `jq` can't touch it directly — and a single-line `grep -oE` can't
+either: grep's `.` doesn't match newlines and grep has no lazy quantifier,
+so a `dataLayer\s*=\s*\[.*?\]` pattern never matches the real multi-line
+block and silently returns nothing):
 
 ```sh
-grep -oE "dataLayer\s*=\s*\[.*?\]" /tmp/event.html \
-  | grep -oE "'[a-z_]+'\s*:\s*'[^']*'" \
-  | sed -E "s/'([a-z_]+)'\s*:\s*'([^']*)'/\1=\2/"
-# org_id=..., org_name=..., venue_id=..., venue_name=..., cobrand=...
+node references/extract-datalayer.mjs /tmp/event.html | jq '.'
+# {"org_id":"1744","org_name":"...","venue_id":"4332","venue_name":"...","cobrand":"ncjazz",...}
 ```
+
+`references/extract-datalayer.mjs` is a small, dependency-free port of
+`extractDataLayer` from `etix-mcp`'s own `src/parse.ts` — its regex spans
+newlines lazily (`[\s\S]*?`), which grep's ERE dialect cannot express.
 
 Price range is derived locally from `offers[].price` (min/max) — there's no
 separate range field.

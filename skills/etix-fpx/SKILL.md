@@ -59,8 +59,9 @@ fpx post-json 'https://www.etix.com/ticket/api/online/geolocation/search' @/tmp/
   | jq '.'
 ```
 
-Ready-to-run paths + extraction recipes (JSON `jq`, and HTML JSON-LD/
-microdata via a small `node` one-liner — the same shapes `etix-mcp`'s
+Ready-to-run paths + extraction recipes (JSON `jq`, HTML JSON-LD/microdata
+via a small `node` one-liner, and the page's `dataLayer` analytics object
+via `references/extract-datalayer.mjs` — the same shapes `etix-mcp`'s
 `src/parse.ts` parses) are in `references/etix-endpoints.md`.
 
 ## The one rule: resolve ids first
