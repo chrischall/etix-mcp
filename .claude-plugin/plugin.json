@@ -1,7 +1,7 @@
 {
   "name": "etix-mcp",
   "displayName": "Etix",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Etix event discovery for Claude — search events, venues & performers and fetch event details",
   "author": {
     "name": "Chris Hall",

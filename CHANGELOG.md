@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://github.com/chrischall/etix-mcp/compare/v0.3.0...v0.4.0) (2026-07-13)
+
+
+### Features
+
+* **skill:** add etix fpx access skill ([#22](https://github.com/chrischall/etix-mcp/issues/22)) ([1554992](https://github.com/chrischall/etix-mcp/commit/15549929c729a2290e4b7edfa0f765a6f49b3346)), closes [#23](https://github.com/chrischall/etix-mcp/issues/23)
+
+
+### Refactor
+
+* **skill:** move root SKILL.md into skills/, point plugin.json at ./skills/ ([#24](https://github.com/chrischall/etix-mcp/issues/24)) ([0dc5cd6](https://github.com/chrischall/etix-mcp/commit/0dc5cd644024543aa142204400a37c7d7c81437c))
+
 ## [0.3.0](https://github.com/chrischall/etix-mcp/compare/v0.2.1...v0.3.0) (2026-07-07)
 
 
