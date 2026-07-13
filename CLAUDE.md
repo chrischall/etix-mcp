@@ -61,7 +61,7 @@ src/
 
 ## Setup / publishing
 
-See [SKILL.md](SKILL.md). Public npm package `etix-mcp` (provenance publish), MCP registry `io.github.chrischall/etix-mcp`, `.mcpb` bundle + ClawHub skill on release.
+See [skills/etix/SKILL.md](skills/etix/SKILL.md). Public npm package `etix-mcp` (provenance publish), MCP registry `io.github.chrischall/etix-mcp`, `.mcpb` bundle + ClawHub skill on release.
 
 <!-- pr-workflow:v2 -->
 ## Pull requests & releases
