@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/chrischall/etix-mcp/compare/v0.4.0...v0.4.1) (2026-07-19)
+
+
+### Documentation
+
+* replace duplicated fleet policy with a pointer ([#29](https://github.com/chrischall/etix-mcp/issues/29)) ([cd5bf87](https://github.com/chrischall/etix-mcp/commit/cd5bf87a50fe268fe7edf240eec8a8682dbad1e1))
+
 ## [0.4.0](https://github.com/chrischall/etix-mcp/compare/v0.3.0...v0.4.0) (2026-07-13)
 
 
