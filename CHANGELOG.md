@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2](https://github.com/chrischall/etix-mcp/compare/v0.4.1...v0.4.2) (2026-07-30)
+
+
+### Bug Fixes
+
+* **deps:** bump @fetchproxy/* to 1.7.0 and @chrischall/mcp-utils to 0.14.0 ([#37](https://github.com/chrischall/etix-mcp/issues/37)) ([04361ef](https://github.com/chrischall/etix-mcp/commit/04361ef8726343138967547c1bc92f393f8dfd99))
+
 ## [0.4.1](https://github.com/chrischall/etix-mcp/compare/v0.4.0...v0.4.1) (2026-07-19)
 
 
