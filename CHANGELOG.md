@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.3](https://github.com/chrischall/etix-mcp/compare/v0.4.2...v0.4.3) (2026-08-06)
+
+
+### Bug Fixes
+
+* **deps:** move to @fetchproxy/server 2.0.0 for the v3 handshake ([#45](https://github.com/chrischall/etix-mcp/issues/45)) ([b1da770](https://github.com/chrischall/etix-mcp/commit/b1da770b6789e862160a0e8290c3e60e49ed8de3))
+
 ## [0.4.2](https://github.com/chrischall/etix-mcp/compare/v0.4.1...v0.4.2) (2026-07-30)
 
 
