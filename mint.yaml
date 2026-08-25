@@ -24,4 +24,3 @@ egress:
   allow:
     # Only hosts the SERVER process actually fetches.
     - etix.com
-    - www.etix.com
