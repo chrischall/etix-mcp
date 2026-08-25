@@ -1,0 +1,27 @@
+version: 1
+name: Etix
+slug: etix
+summary: >-
+  Etix event discovery for Claude — search events, venues & performers and
+  fetch event details BROWSER-BRIDGE MCP: it reaches its site through the
+  user's signed-in tab via the fetchproxy bridge, so a registration also
+  needs runtime fly-shared, bridge: true and a bridgePortEnv — registration
+  fields this manifest has no schema for. state.dataDir below is required
+  for bridge and is why it is declared.
+env:
+  - name: ETIX_WS_PORT
+    required: false
+    help: >-
+      Override the fetchproxy WebSocket port (default 37149).
+state:
+  dataDir: true
+  reason: >-
+    The fetchproxy identity lives at $HOME/.fetchproxy/identity/<name>.json
+    and the pair code derives from it. Without a persistent $HOME every cold
+    start mints a fresh identity and re-prompts pairing in the browser; the
+    API refuses bridge without it.
+egress:
+  allow:
+    # Only hosts the SERVER process actually fetches.
+    - etix.com
+    - www.etix.com
