@@ -1,5 +1,5 @@
 ---
-name: etix-mcp
+name: etix
 description: Search Etix events, venues, and performers and pull event/venue details via MCP. Triggers on phrases like "find events on etix", "etix tickets for", "what's playing at <venue> on etix", "etix event details for", "search etix for <artist>", or any request involving Etix events, venues, performers, or showtimes. Requires etix-mcp installed and the fetchproxy extension active with an open etix.com tab (see Setup below).
 ---
 
