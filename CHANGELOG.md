@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.4](https://github.com/chrischall/etix-mcp/compare/v0.4.3...v0.4.4) (2026-08-26)
+
+
+### Bug Fixes
+
+* tidy the etix mint.yaml egress and .mcpbignore ([#56](https://github.com/chrischall/etix-mcp/issues/56)) ([aed007d](https://github.com/chrischall/etix-mcp/commit/aed007d929530820e1a04d7e23bce1d851f4d63c)), closes [#55](https://github.com/chrischall/etix-mcp/issues/55)
+
+
+### Documentation
+
+* **skill:** declare the name this skill actually publishes under ([#59](https://github.com/chrischall/etix-mcp/issues/59)) ([e9bf546](https://github.com/chrischall/etix-mcp/commit/e9bf546e3eb9269fdc0740219e6f343735f4d1ff))
+
 ## [0.4.3](https://github.com/chrischall/etix-mcp/compare/v0.4.2...v0.4.3) (2026-08-06)
 
 
