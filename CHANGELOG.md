@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.5](https://github.com/chrischall/etix-mcp/compare/v0.4.4...v0.4.5) (2026-08-28)
+
+
+### Bug Fixes
+
+* **egress:** declare every host the server dials in mint.yaml ([#62](https://github.com/chrischall/etix-mcp/issues/62)) ([8040392](https://github.com/chrischall/etix-mcp/commit/804039256fde0dde84d3cc7c03bf6fea8e143514))
+
 ## [0.4.4](https://github.com/chrischall/etix-mcp/compare/v0.4.3...v0.4.4) (2026-08-26)
 
 
