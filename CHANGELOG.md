@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/chrischall/etix-mcp/compare/v0.4.5...v0.5.0) (2026-08-29)
+
+
+### Features
+
+* **deps:** take @fetchproxy/server 2.2.0 so the concentrator can bind its sandbox address ([#64](https://github.com/chrischall/etix-mcp/issues/64)) ([bce395c](https://github.com/chrischall/etix-mcp/commit/bce395c20373d6c812ad6f58388124e31cb9f4ef))
+
 ## [0.4.5](https://github.com/chrischall/etix-mcp/compare/v0.4.4...v0.4.5) (2026-08-28)
 
 
