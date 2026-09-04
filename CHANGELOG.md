@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0](https://github.com/chrischall/etix-mcp/compare/v0.5.0...v0.6.0) (2026-09-04)
+
+
+### Features
+
+* **tools:** compact by default — strip media URLs, and minify every response ([#78](https://github.com/chrischall/etix-mcp/issues/78)) ([dce70c4](https://github.com/chrischall/etix-mcp/commit/dce70c4291a49f5ba99645c04546f6c3e0c28a69))
+
+
+### Documentation
+
+* **mint:** declare ETIX_DEBUG in mint.yaml ([#71](https://github.com/chrischall/etix-mcp/issues/71)) ([7053ba6](https://github.com/chrischall/etix-mcp/commit/7053ba6355c9f432d0dce8933faab4679f1e9b5b))
+
 ## [0.5.0](https://github.com/chrischall/etix-mcp/compare/v0.4.5...v0.5.0) (2026-08-29)
 
 
