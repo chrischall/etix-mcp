@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { EtixClient } from '../client.js';
-import { textResult } from '../mcp.js';
+import { minifiedResult } from '../mcp.js';
 import { parseSuggest } from '../parse.js';
 
 /**
@@ -43,7 +43,7 @@ export function registerSearchTools(server: McpServer, client: EtixClient): void
         `/ticket/api/online/search/suggest?keywords=${encodeURIComponent(keywords)}`
       );
       const result = parseSuggest(raw);
-      return textResult({
+      return minifiedResult({
         keywords,
         venue_count: result.venues.length,
         event_count: result.events.length,

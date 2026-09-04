@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { EtixClient } from '../client.js';
-import { textResult } from '../mcp.js';
+import { minifiedResult } from '../mcp.js';
 import { parseEventDetail } from '../parse.js';
 
 /**
@@ -39,7 +39,7 @@ export function registerEventTools(server: McpServer, client: EtixClient): void 
     },
     async ({ event_id }) => {
       const html = await client.fetchHtml(`/ticket/p/${event_id}`);
-      return textResult(parseEventDetail(html, event_id));
+      return minifiedResult(parseEventDetail(html, event_id));
     }
   );
 }

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { EtixClient } from '../client.js';
-import { textResult } from '../mcp.js';
+import { minifiedResult } from '../mcp.js';
 import { parseVenueDetail } from '../parse.js';
 
 /**
@@ -40,7 +40,7 @@ export function registerVenueTools(server: McpServer, client: EtixClient): void 
     async ({ venue_id }) => {
       const html = await client.fetchHtml(`/ticket/v/${venue_id}`);
       const venue = parseVenueDetail(html, venue_id);
-      return textResult({ ...venue, event_count: venue.events.length });
+      return minifiedResult({ ...venue, event_count: venue.events.length });
     }
   );
 }

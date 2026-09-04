@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { EtixClient } from '../client.js';
-import { textResult } from '../mcp.js';
+import { minifiedResult } from '../mcp.js';
 
 /**
  * `etix_find_location`: resolve a city or postal code to coordinates.
@@ -57,7 +57,7 @@ export function registerLocationTools(
         '/ticket/api/online/geolocation/search',
         { cityOrPostalCode: query, country: country ?? 'USA' }
       );
-      return textResult({
+      return minifiedResult({
         query,
         latitude: geo.latitude,
         longitude: geo.longitude,
