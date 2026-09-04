@@ -43,7 +43,7 @@ src/
                         #   + DataDome bot-wall detection (classifyBotWall → BotWallError)
   parse.ts              # parseSuggest / parseEventDetail / parseVenueDetail
                         #   (JSON-LD + dataLayer + schema.org microdata)
-  mcp.ts                # textResult re-export
+  mcp.ts                # minifiedResult re-export
   tools/*.ts            # one registerXxxTools per tool
 ```
 
@@ -54,7 +54,7 @@ src/
 ## Conventions
 
 - **TDD.** Failing test → minimal code → green. `npm test` (vitest) must stay green.
-- **Results** via `textResult(data)`; errors via typed `Error` subclasses (`BotWallError`) with actionable hints.
+- **Results** via `minifiedResult(data)`; errors via typed `Error` subclasses (`BotWallError`) with actionable hints.
 - **Version** lives only in `src/version.ts`; release-please bumps it (+ the manifests listed in `release-please-config.json` `extra-files`). `tests/version-sync.test.ts` guards drift. Don't hand-bump.
 - **Server-boot smoke test** (`tests/server-boot.test.ts`) spawns the real `dist/bundle.js` with no `node_modules` and asserts the initialize + tools/list handshake — catches eager-import crashes the unit tests can't.
 - **Don't merge PRs or add `ready-to-merge` yourself** — `pr-auto-review` + `auto-merge` ship it on a `pass` or `warn` verdict; `fail` blocks.
