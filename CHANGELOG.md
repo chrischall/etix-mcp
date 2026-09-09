@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.1](https://github.com/chrischall/etix-mcp/compare/v0.6.0...v0.6.1) (2026-09-09)
+
+
+### Bug Fixes
+
+* **deps:** bump hono from 4.13.0 to 4.13.7 ([#89](https://github.com/chrischall/etix-mcp/issues/89)) ([5e7bce4](https://github.com/chrischall/etix-mcp/commit/5e7bce459b29f69d444c23824062cc8f418c03f2))
+* **deps:** require @fetchproxy/server ^2.7.0, the first that reads FETCHPROXY_IDENTITY_DIR ([#87](https://github.com/chrischall/etix-mcp/issues/87)) ([e5a2b34](https://github.com/chrischall/etix-mcp/commit/e5a2b34d700340d47f214156424895b34dadbc0d))
+
 ## [0.6.0](https://github.com/chrischall/etix-mcp/compare/v0.5.0...v0.6.0) (2026-09-04)
 
 
