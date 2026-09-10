@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.6.2](https://github.com/chrischall/etix-mcp/compare/v0.6.1...v0.6.2) (2026-09-10)
+
+
+### Bug Fixes
+
+* **deps:** @fetchproxy/server 2.10.0 and @chrischall/mcp-utils 0.26.1 ([#92](https://github.com/chrischall/etix-mcp/issues/92)) ([a5c4099](https://github.com/chrischall/etix-mcp/commit/a5c409929b5136f5014ac0cfa3810286287fa1d1))
+* **deps:** declare the peer floors mcp-utils 0.26.1 requires ([#93](https://github.com/chrischall/etix-mcp/issues/93)) ([66ad89f](https://github.com/chrischall/etix-mcp/commit/66ad89fffa8040ccf6d77e10b7d777abf63ddbf8))
+* **deps:** take @fetchproxy/server 2.9.1 so a pairing prompt survives ([#90](https://github.com/chrischall/etix-mcp/issues/90)) ([3608609](https://github.com/chrischall/etix-mcp/commit/36086095d689942f998bb0495b351b1c1e95f81d))
+
 ## [0.6.1](https://github.com/chrischall/etix-mcp/compare/v0.6.0...v0.6.1) (2026-09-09)
 
 
