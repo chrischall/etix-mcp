@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.6.3](https://github.com/chrischall/etix-mcp/compare/v0.6.2...v0.6.3) (2026-09-14)
+
+
+### Bug Fixes
+
+* **deps:** @fetchproxy/server 2.11.3, so the hosted extension pin persists ([#94](https://github.com/chrischall/etix-mcp/issues/94)) ([0d2a0a8](https://github.com/chrischall/etix-mcp/commit/0d2a0a892a179bb79247262ae0b5dc7e9a806276))
+* **deps:** @fetchproxy/server 3.0.0 — protocol v4 (forward secrecy, AAD over the frame) ([#98](https://github.com/chrischall/etix-mcp/issues/98)) ([32ab48e](https://github.com/chrischall/etix-mcp/commit/32ab48e411ac2f94143365c742b8e40c3fbda7ed))
+* **deps:** bump node-html-parser in the production-dependencies group ([#97](https://github.com/chrischall/etix-mcp/issues/97)) ([466aa01](https://github.com/chrischall/etix-mcp/commit/466aa01763a402d9d1c8cc930fc905520a05cd92))
+
 ## [0.6.2](https://github.com/chrischall/etix-mcp/compare/v0.6.1...v0.6.2) (2026-09-10)
 
 
