@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.4](https://github.com/chrischall/etix-mcp/compare/v0.6.3...v0.6.4) (2026-09-15)
+
+
+### Bug Fixes
+
+* **deps:** @fetchproxy/server 3.0.1 — capped peer frames, logged load drops, atomic identity writes ([#99](https://github.com/chrischall/etix-mcp/issues/99)) ([13bac0d](https://github.com/chrischall/etix-mcp/commit/13bac0df5ccb206dad4b2d053978c538564cfe08))
+
 ## [0.6.3](https://github.com/chrischall/etix-mcp/compare/v0.6.2...v0.6.3) (2026-09-14)
 
 
