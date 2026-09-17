@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { McpServer } from '@modelcontextprotocol/server';
 import type { EtixClient } from '../client.js';
 import { minifiedResult } from '../mcp.js';
 import { parseSuggest } from '../parse.js';
@@ -31,12 +31,12 @@ export function registerSearchTools(server: McpServer, client: EtixClient): void
         idempotentHint: true,
         openWorldHint: true,
       },
-      inputSchema: {
+      inputSchema: z.object({
         keywords: z
           .string()
           .min(1)
           .describe('Search text — an artist, event, or venue name (e.g. "jazz", "Marion Meadows").'),
-      },
+      }),
     },
     async ({ keywords }) => {
       const raw = await client.fetchJson<Record<string, never>>(

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { McpServer } from '@modelcontextprotocol/server';
 import type { EtixClient } from '../client.js';
 import { minifiedResult } from '../mcp.js';
 import { parseEventDetail } from '../parse.js';
@@ -29,13 +29,13 @@ export function registerEventTools(server: McpServer, client: EtixClient): void 
         idempotentHint: true,
         openWorldHint: true,
       },
-      inputSchema: {
+      inputSchema: z.object({
         event_id: z
           .number()
           .int()
           .positive()
           .describe('Etix event/performance id (e.g. 39004863). From etix_search.'),
-      },
+      }),
     },
     async ({ event_id }) => {
       const html = await client.fetchHtml(`/ticket/p/${event_id}`);
