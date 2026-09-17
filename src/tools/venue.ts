@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { McpServer } from '@modelcontextprotocol/server';
 import type { EtixClient } from '../client.js';
 import { minifiedResult } from '../mcp.js';
 import { parseVenueDetail } from '../parse.js';
@@ -29,13 +29,13 @@ export function registerVenueTools(server: McpServer, client: EtixClient): void 
         idempotentHint: true,
         openWorldHint: true,
       },
-      inputSchema: {
+      inputSchema: z.object({
         venue_id: z
           .number()
           .int()
           .positive()
           .describe('Etix venue id (e.g. 17987). From etix_search.'),
-      },
+      }),
     },
     async ({ venue_id }) => {
       const html = await client.fetchHtml(`/ticket/v/${venue_id}`);

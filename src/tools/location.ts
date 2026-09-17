@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { McpServer } from '@modelcontextprotocol/server';
 import type { EtixClient } from '../client.js';
 import { minifiedResult } from '../mcp.js';
 
@@ -41,7 +41,7 @@ export function registerLocationTools(
         idempotentHint: true,
         openWorldHint: true,
       },
-      inputSchema: {
+      inputSchema: z.object({
         query: z
           .string()
           .min(1)
@@ -50,7 +50,7 @@ export function registerLocationTools(
           .string()
           .optional()
           .describe('Country code/name to scope the lookup. Defaults to "USA".'),
-      },
+      }),
     },
     async ({ query, country }) => {
       const geo = await client.postJson<GeoResult>(
