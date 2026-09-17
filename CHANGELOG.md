@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.0.0](https://github.com/chrischall/etix-mcp/compare/v0.6.4...v1.0.0) (2026-09-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* **mcp:** migrate server to SDK v2 ([#102](https://github.com/chrischall/etix-mcp/issues/102))
+
+### Features
+
+* **mcp:** migrate server to SDK v2 ([#102](https://github.com/chrischall/etix-mcp/issues/102)) ([3db447e](https://github.com/chrischall/etix-mcp/commit/3db447e4799723703984308d64e58f6b30f7f25a))
+
+
+### Bug Fixes
+
+* **build:** preserve Zod initialization in standalone bundle ([#105](https://github.com/chrischall/etix-mcp/issues/105)) ([7088d93](https://github.com/chrischall/etix-mcp/commit/7088d93c5a20f2c77dfa37956e908e2c57ee1762))
+* **mcp:** require Node 20 for SDK v2 ([#106](https://github.com/chrischall/etix-mcp/issues/106)) ([7f9872a](https://github.com/chrischall/etix-mcp/commit/7f9872a866bfcb04be17f94738630e3b78759ae0))
+
 ## [0.6.4](https://github.com/chrischall/etix-mcp/compare/v0.6.3...v0.6.4) (2026-09-15)
 
 
