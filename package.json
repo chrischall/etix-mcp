@@ -41,7 +41,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@chrischall/mcp-utils": "^0.28.0",
+    "@chrischall/mcp-utils": "^1.0.0",
     "@fetchproxy/server": "^3.0.1",
     "@modelcontextprotocol/server": "^2.0.0",
     "node-html-parser": "^9.0.0",
@@ -57,6 +57,6 @@
     "vitest": "^5.0.0"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.0.0"
   }
 }
