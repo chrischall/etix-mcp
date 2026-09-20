@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/chrischall/etix-mcp/compare/v1.0.0...v1.1.0) (2026-09-19)
+
+
+### Features
+
+* **deps:** take mcp-utils 1.0.0, fixing server/discover ([#109](https://github.com/chrischall/etix-mcp/issues/109)) ([6d0bca8](https://github.com/chrischall/etix-mcp/commit/6d0bca8694cc491a34cec625c35440e9ea8c2e08))
+
 ## [1.0.0](https://github.com/chrischall/etix-mcp/compare/v0.6.4...v1.0.0) (2026-09-17)
 
 
