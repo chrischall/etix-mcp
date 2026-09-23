@@ -75,13 +75,20 @@ export class EtixClient {
     return this.parseJson<T>(result.body, 'GET', path);
   }
 
-  /** POST a JSON body to a consumer endpoint (e.g. geolocation/search). */
-  async postJson<T = unknown>(path: string, body: unknown): Promise<T> {
+  /** POST a JSON body to a consumer endpoint (e.g. geolocation/search).
+   *  Pass `{ retryOnTimeout: true }` only when the POST is a provable read
+   *  (a lookup/search) — a write must never be re-sent after a timeout. */
+  async postJson<T = unknown>(
+    path: string,
+    body: unknown,
+    opts: { retryOnTimeout?: boolean } = {}
+  ): Promise<T> {
     const result = await this.transport.fetch({
       path,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
+      ...(opts.retryOnTimeout ? { retryOnTimeout: true } : {}),
     });
     this.throwIfNotOk(result, 'POST', path);
     this.throwIfBotWall(result, path);

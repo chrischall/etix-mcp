@@ -27,7 +27,9 @@ describe('etix_find_location', () => {
     const data = parseToolResult(res);
     expect(postJson).toHaveBeenCalledWith(
       '/ticket/api/online/geolocation/search',
-      { cityOrPostalCode: 'Charlotte, NC', country: 'USA' }
+      { cityOrPostalCode: 'Charlotte, NC', country: 'USA' },
+      // geolocation/search is a read-only lookup — safe to retry on timeout
+      { retryOnTimeout: true }
     );
     expect(data).toMatchObject({
       query: 'Charlotte, NC',
@@ -48,7 +50,8 @@ describe('etix_find_location', () => {
     await h.callTool('etix_find_location', { query: 'Toronto', country: 'CAN' });
     expect(postJson).toHaveBeenCalledWith(
       '/ticket/api/online/geolocation/search',
-      { cityOrPostalCode: 'Toronto', country: 'CAN' }
+      { cityOrPostalCode: 'Toronto', country: 'CAN' },
+      { retryOnTimeout: true }
     );
     await h.close();
   });

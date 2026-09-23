@@ -73,4 +73,21 @@ describe('EtixClient', () => {
       })
     );
   });
+
+  it('postJson forwards retryOnTimeout when the caller marks the POST read-only', async () => {
+    const transport = stubTransport({ body: '{}' });
+    const client = new EtixClient({ transport });
+    await client.postJson('/ticket/api/online/geolocation/search', {}, { retryOnTimeout: true });
+    expect(transport.fetch).toHaveBeenCalledWith(
+      expect.objectContaining({ method: 'POST', retryOnTimeout: true })
+    );
+  });
+
+  it('postJson does NOT opt into retryOnTimeout by default (writes must not re-send)', async () => {
+    const transport = stubTransport({ body: '{}' });
+    const client = new EtixClient({ transport });
+    await client.postJson('/ticket/api/online/x', { a: 1 });
+    const init = vi.mocked(transport.fetch).mock.calls[0]![0];
+    expect(init.retryOnTimeout).toBeUndefined();
+  });
 });

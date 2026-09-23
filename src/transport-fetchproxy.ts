@@ -114,6 +114,9 @@ export class FetchproxyTransport implements EtixTransport {
       path: init.path,
       headers: init.headers,
       body: init.body,
+      ...(init.retryOnTimeout !== undefined
+        ? { retryOnTimeout: init.retryOnTimeout }
+        : {}),
     });
     const elapsed = Date.now() - start;
     log('fetch:done', {
