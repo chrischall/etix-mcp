@@ -22,6 +22,12 @@ export interface FetchInit {
   /** Serialized request body. JSON callers stringify before calling.
    *  Omitted for GETs. */
   body?: string;
+  /** Re-send once after a bridge timeout (cold-start retry). @fetchproxy
+   *  3.2.0 only retries GET/HEAD/OPTIONS by default, so a POST that is a
+   *  provable read (a search/lookup) must opt in here. Never set it on a
+   *  POST that creates or changes anything — a retry could apply it
+   *  twice. */
+  retryOnTimeout?: boolean;
 }
 
 export interface FetchResult {

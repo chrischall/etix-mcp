@@ -55,7 +55,10 @@ export function registerLocationTools(
     async ({ query, country }) => {
       const geo = await client.postJson<GeoResult>(
         '/ticket/api/online/geolocation/search',
-        { cityOrPostalCode: query, country: country ?? 'USA' }
+        { cityOrPostalCode: query, country: country ?? 'USA' },
+        // A read-only lookup that happens to use POST — safe to re-send
+        // after a bridge timeout (fetchproxy 3.2 won't retry POSTs unasked).
+        { retryOnTimeout: true }
       );
       return minifiedResult({
         query,

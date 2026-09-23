@@ -8,6 +8,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { CreateFetchproxyTransportOptions } from '@chrischall/mcp-utils/fetchproxy';
 
 const factoryCalls: CreateFetchproxyTransportOptions[] = [];
+const innerFetch = vi.fn();
 
 vi.mock('@chrischall/mcp-utils/fetchproxy', async () => {
   const actual =
@@ -18,13 +19,15 @@ vi.mock('@chrischall/mcp-utils/fetchproxy', async () => {
     ...actual,
     createFetchproxyTransport: (opts: CreateFetchproxyTransportOptions) => {
       factoryCalls.push(opts);
-      return { role: 'mock' };
+      return { role: 'mock', fetch: innerFetch };
     },
   };
 });
 
 beforeEach(() => {
   factoryCalls.length = 0;
+  innerFetch.mockReset();
+  innerFetch.mockResolvedValue({ status: 200, body: '{}', url: 'https://www.etix.com/' });
 });
 
 describe('FetchproxyTransport — constructor options', () => {
@@ -78,5 +81,21 @@ describe('FetchproxyTransport — constructor options', () => {
     );
     new FetchproxyTransport({ version: '0.0.0-test', port: 40_000 });
     expect(factoryCalls[0]!.port).toBe(40_000);
+  });
+});
+
+describe('FetchproxyTransport — fetch()', () => {
+  it('forwards retryOnTimeout:true to the inner transport for read-only POSTs', async () => {
+    const { FetchproxyTransport } = await import('../src/transport-fetchproxy.js');
+    const t = new FetchproxyTransport({ version: '0.0.0-test' });
+    await t.fetch({ method: 'POST', path: '/ticket/api/online/geolocation/search', body: '{}', retryOnTimeout: true });
+    expect(innerFetch).toHaveBeenCalledWith(expect.objectContaining({ method: 'POST', retryOnTimeout: true }));
+  });
+
+  it('does not set retryOnTimeout when the caller omits it', async () => {
+    const { FetchproxyTransport } = await import('../src/transport-fetchproxy.js');
+    const t = new FetchproxyTransport({ version: '0.0.0-test' });
+    await t.fetch({ method: 'POST', path: '/x', body: '{}' });
+    expect('retryOnTimeout' in innerFetch.mock.calls[0]![0]).toBe(false);
   });
 });
