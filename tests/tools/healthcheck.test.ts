@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, afterAll } from 'vitest';
-import { BotWallError, type EtixClient } from '../../src/client.js';
+import { BotWallError, EtixClient } from '../../src/client.js';
+import type { EtixTransport } from '../../src/transport.js';
 import { registerHealthcheckTools } from '../../src/tools/healthcheck.js';
 import { classifyBridgeError } from '../../src/transport-fetchproxy.js';
 import type { BridgeProbeResult, BridgeStatus } from '../../src/transport.js';
@@ -89,6 +90,30 @@ describe('etix_healthcheck', () => {
     const fetchHtml = vi
       .fn()
       .mockRejectedValue(new BotWallError('/robots.txt', undefined, { vendor: 'DataDome' }));
+    const h = await createTestHarness((server) =>
+      registerHealthcheckTools(server, stubClient(fetchHtml))
+    );
+    const res = await h.callTool('etix_healthcheck', {});
+    const data = parseToolResult(res);
+    expect(data.ok).toBe(false);
+    expect(data.error.kind).toBe('bot_wall');
+    expect(data.hint).toMatch(/DataDome/);
+    await h.close();
+  });
+
+  it('classifies a 403 DataDome challenge on the probe as kind=bot_wall', async () => {
+    // Real EtixClient over a transport that answers the probe with the 403
+    // captcha page DataDome serves a tab that lost clearance.
+    const transport = {
+      fetch: vi.fn().mockResolvedValue({
+        status: 403,
+        url: 'https://www.etix.com/robots.txt',
+        body:
+          "<html><body><script>var dd={'host':'geo.captcha-delivery.com'}</script></body></html>",
+      }),
+    } as unknown as EtixTransport;
+    const real = new EtixClient({ transport });
+    const fetchHtml = vi.fn((p: string) => real.fetchHtml(p));
     const h = await createTestHarness((server) =>
       registerHealthcheckTools(server, stubClient(fetchHtml))
     );

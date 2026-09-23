@@ -58,20 +58,20 @@ export class EtixClient {
     return this.transport.runProbe(fetchFn, probePath);
   }
 
-  /** GET an etix.com path, return the HTML body. Throws on non-2xx or a
-   *  bot-wall interstitial. */
+  /** GET an etix.com path, return the HTML body. Throws on a bot-wall
+   *  interstitial (at any status) or a non-2xx. */
   async fetchHtml(path: string): Promise<string> {
     const result = await this.transport.fetch({ path, method: 'GET' });
-    this.throwIfNotOk(result, 'GET', path);
     this.throwIfBotWall(result, path);
+    this.throwIfNotOk(result, 'GET', path);
     return result.body;
   }
 
   /** GET a consumer `/ticket/api/online/...` JSON endpoint. */
   async fetchJson<T = unknown>(path: string): Promise<T> {
     const result = await this.transport.fetch({ path, method: 'GET' });
-    this.throwIfNotOk(result, 'GET', path);
     this.throwIfBotWall(result, path);
+    this.throwIfNotOk(result, 'GET', path);
     return this.parseJson<T>(result.body, 'GET', path);
   }
 
@@ -94,8 +94,8 @@ export class EtixClient {
         ? { retryOnTimeout: opts.retryOnTimeout }
         : {}),
     });
-    this.throwIfNotOk(result, 'POST', path);
     this.throwIfBotWall(result, path);
+    this.throwIfNotOk(result, 'POST', path);
     return this.parseJson<T>(result.body, 'POST', path);
   }
 
@@ -120,6 +120,10 @@ export class EtixClient {
     );
   }
 
+  // Runs BEFORE `throwIfNotOk`: DataDome answers an in-browser fetch from a
+  // tab that lost clearance with a 403 (sometimes 202/429) captcha page, and
+  // that must surface as the typed, actionable BotWallError rather than a
+  // generic "Etix GET … 403" error.
   private throwIfBotWall(result: FetchResult, path: string): void {
     const verdict = classifyBotWall(result.body, result.status);
     if (verdict.blocked) {
