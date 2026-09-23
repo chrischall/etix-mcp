@@ -98,4 +98,11 @@ describe('FetchproxyTransport — fetch()', () => {
     await t.fetch({ method: 'POST', path: '/x', body: '{}' });
     expect('retryOnTimeout' in innerFetch.mock.calls[0]![0]).toBe(false);
   });
+
+  it('forwards an explicit retryOnTimeout:false to the inner transport', async () => {
+    const { FetchproxyTransport } = await import('../src/transport-fetchproxy.js');
+    const t = new FetchproxyTransport({ version: '0.0.0-test' });
+    await t.fetch({ method: 'POST', path: '/x', body: '{}', retryOnTimeout: false });
+    expect(innerFetch.mock.calls[0]![0]).toHaveProperty('retryOnTimeout', false);
+  });
 });

@@ -88,6 +88,14 @@ describe('EtixClient', () => {
     const client = new EtixClient({ transport });
     await client.postJson('/ticket/api/online/x', { a: 1 });
     const init = vi.mocked(transport.fetch).mock.calls[0]![0];
-    expect(init.retryOnTimeout).toBeUndefined();
+    expect('retryOnTimeout' in init).toBe(false);
+  });
+
+  it('postJson forwards an explicit retryOnTimeout:false so the caller can turn the retry off', async () => {
+    const transport = stubTransport({ body: '{}' });
+    const client = new EtixClient({ transport });
+    await client.postJson('/ticket/api/online/x', { a: 1 }, { retryOnTimeout: false });
+    const init = vi.mocked(transport.fetch).mock.calls[0]![0];
+    expect(init).toHaveProperty('retryOnTimeout', false);
   });
 });
