@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.1](https://github.com/chrischall/etix-mcp/compare/v1.1.0...v1.1.1) (2026-09-23)
+
+
+### Bug Fixes
+
+* **deps:** require zod ^4.6.5 to match @chrischall/mcp-utils 2.4.0 ([#115](https://github.com/chrischall/etix-mcp/issues/115)) ([818cf19](https://github.com/chrischall/etix-mcp/commit/818cf19cb2262e734d7d49d7c0fd323c24bf62a3))
+* **deps:** upgrade @chrischall/mcp-utils to 2.4.0 and @fetchproxy/* to 3.2.0 ([#111](https://github.com/chrischall/etix-mcp/issues/111)) ([db1adb8](https://github.com/chrischall/etix-mcp/commit/db1adb855e521b9708a4d68ea9bc078f5b8f6ada))
+* **fetchproxy:** forward an explicit retryOnTimeout: false consistently ([#114](https://github.com/chrischall/etix-mcp/issues/114)) ([3fd01e0](https://github.com/chrischall/etix-mcp/commit/3fd01e0b1db63d99416fe3f30a8a0c4a8488f155)), closes [#112](https://github.com/chrischall/etix-mcp/issues/112)
+
 ## [1.1.0](https://github.com/chrischall/etix-mcp/compare/v1.0.0...v1.1.0) (2026-09-19)
 
 
