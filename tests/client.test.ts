@@ -50,6 +50,22 @@ describe('EtixClient', () => {
     );
   });
 
+  it.each([403, 202, 429])(
+    'raises BotWallError (not a generic HTTP error) on a %i DataDome interstitial',
+    async (status) => {
+      const client = new EtixClient({
+        transport: stubTransport({ status, body: DATADOME_BODY }),
+      });
+      await expect(client.fetchHtml('/ticket/p/1')).rejects.toBeInstanceOf(BotWallError);
+      await expect(client.fetchJson('/ticket/api/online/x')).rejects.toBeInstanceOf(
+        BotWallError
+      );
+      await expect(client.postJson('/ticket/api/online/x', {})).rejects.toBeInstanceOf(
+        BotWallError
+      );
+    }
+  );
+
   it('throws a service-tagged error on non-2xx', async () => {
     const client = new EtixClient({
       transport: stubTransport({ status: 404, body: 'not found' }),
