@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
+  extractDataLayer,
   parseEventDetail,
   parseVenueDetail,
   parseSuggest,
@@ -156,5 +157,45 @@ describe('parseVenueDetail', () => {
     );
     expect(bare.events).toEqual([]);
     expect(bare.name).toBe('X');
+  });
+});
+
+describe('extractDataLayer', () => {
+  it('keeps values that contain a JS-escaped apostrophe intact', () => {
+    const dl = extractDataLayer(
+      "<script>dataLayer = [{ 'org_name' : 'Bojangles\\' Coliseum', 'venue_name' : 'Ruth\\'s', 'venue_id' : '5' }]</script>"
+    );
+    expect(dl).toEqual({
+      org_name: "Bojangles' Coliseum",
+      venue_name: "Ruth's",
+      venue_id: '5',
+    });
+  });
+
+  it('unescapes backslashes and decodes HTML entities in values', () => {
+    const dl = extractDataLayer(
+      "<script>dataLayer = [{ 'a' : 'C:\\\\x', 'b' : 'Brewer&#39;s &amp; Co', 'c' : 'Ruth&#039;s' }]</script>"
+    );
+    expect(dl).toEqual({ a: 'C:\\x', b: "Brewer's & Co", c: "Ruth's" });
+  });
+});
+
+describe('parseVenueDetail with an apostrophe in the name', () => {
+  const html =
+    "<html><body><script>dataLayer = [{ 'venue_id' : '5', 'venue_name' : 'Bojangles\\' Coliseum', " +
+    "'org_id' : '2', 'org_name' : 'Ruth\\'s Presents' }]</script></body></html>";
+
+  it('returns the full venue and org names', () => {
+    const v = parseVenueDetail(html, 5);
+    expect(v.name).toBe("Bojangles' Coliseum");
+    expect(v.organization).toEqual({ id: 2, name: "Ruth's Presents" });
+  });
+
+  it('prefers the header microdata name over the dataLayer', () => {
+    const withPlace = html.replace(
+      '</body>',
+      '<div itemscope itemtype="http://schema.org/Place"><span itemprop="name">Bojangles&#39; Coliseum (Charlotte)</span></div></body>'
+    );
+    expect(parseVenueDetail(withPlace, 5).name).toBe("Bojangles' Coliseum (Charlotte)");
   });
 });

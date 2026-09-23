@@ -113,15 +113,50 @@ export function parseSuggest(raw: RawSuggest): SuggestResult {
 
 // ─── shared HTML helpers ────────────────────────────────────────────────────
 
+const HTML_ENTITIES: Record<string, string> = {
+  amp: '&',
+  apos: "'",
+  quot: '"',
+  lt: '<',
+  gt: '>',
+  nbsp: '\u00a0',
+};
+
+/** Undo JS single-quoted-string escapes (`\'`, `\\`, `\xNN`, `\uNNNN`, …)
+ *  and then HTML entities (`&#39;`, `&amp;`, …) — Etix's templates may emit
+ *  either form for a name like "Bojangles' Coliseum". */
+function unescapeDataLayerValue(raw: string): string {
+  const js = raw.replace(
+    /\\(?:x([0-9a-fA-F]{2})|u([0-9a-fA-F]{4})|([\s\S]))/g,
+    (_, hex: string | undefined, uni: string | undefined, ch: string) => {
+      if (hex) return String.fromCharCode(parseInt(hex, 16));
+      if (uni) return String.fromCharCode(parseInt(uni, 16));
+      return ({ n: '\n', r: '\r', t: '\t' } as Record<string, string>)[ch] ?? ch;
+    }
+  );
+  return js.replace(/&(#x[0-9a-fA-F]+|#\d+|[a-zA-Z]+);/g, (whole, ent: string) => {
+    if (ent[0] === '#') {
+      const code =
+        ent[1] === 'x' || ent[1] === 'X'
+          ? parseInt(ent.slice(2), 16)
+          : parseInt(ent.slice(1), 10);
+      return code >= 0 && code <= 0x10ffff ? String.fromCodePoint(code) : whole;
+    }
+    return HTML_ENTITIES[ent.toLowerCase()] ?? whole;
+  });
+}
+
 /** Parse the page-level `dataLayer = [{ 'k' : 'v', ... }]` analytics object.
  *  It's single-quoted (not valid JSON), so we scrape the `'key' : 'value'`
- *  pairs directly. Returns a flat string map. */
+ *  pairs directly. A value may contain escaped quotes (`'Bojangles\' Coliseum'`),
+ *  so the value pattern consumes `\.` escape pairs rather than stopping at
+ *  the first `'`. Returns a flat, unescaped string map. */
 export function extractDataLayer(html: string): Record<string, string> {
   const block = html.match(/dataLayer\s*=\s*\[\s*\{([\s\S]*?)\}\s*\]/);
   const out: Record<string, string> = {};
   if (!block) return out;
-  for (const m of block[1].matchAll(/'([\w]+)'\s*:\s*'([^']*)'/g)) {
-    out[m[1]] = m[2];
+  for (const m of block[1].matchAll(/'([\w]+)'\s*:\s*'((?:[^'\\]|\\[\s\S])*)'/g)) {
+    out[m[1]] = unescapeDataLayerValue(m[2]);
   }
   return out;
 }
@@ -323,9 +358,12 @@ export function parseVenueDetail(html: string, venueId: number): VenueDetail {
     };
   });
 
+  // The header microdata is the rendered, entity-decoded display name; the
+  // dataLayer copy is an analytics string, so it's only the fallback.
   const name =
+    (headerPlace ? microdataText(headerPlace, 'name') : undefined) ||
     dl.venue_name ||
-    (headerPlace ? microdataText(headerPlace, 'name') : undefined);
+    undefined;
 
   return {
     venue_id: venueId,

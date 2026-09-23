@@ -32,9 +32,31 @@ if (!block) {
   process.exit(1);
 }
 
+const HTML_ENTITIES = { amp: '&', apos: "'", quot: '"', lt: '<', gt: '>', nbsp: '\u00a0' };
+
+// Undo JS single-quoted-string escapes (`\'`, `\\`, `\xNN`, `\uNNNN`), then
+// HTML entities (`&#39;`, `&amp;`) — a name like "Bojangles' Coliseum" may
+// arrive in either form.
+function unescapeValue(raw) {
+  const js = raw.replace(/\\(?:x([0-9a-fA-F]{2})|u([0-9a-fA-F]{4})|([\s\S]))/g, (_, hex, uni, ch) => {
+    if (hex) return String.fromCharCode(parseInt(hex, 16));
+    if (uni) return String.fromCharCode(parseInt(uni, 16));
+    return { n: '\n', r: '\r', t: '\t' }[ch] ?? ch;
+  });
+  return js.replace(/&(#x[0-9a-fA-F]+|#\d+|[a-zA-Z]+);/g, (whole, ent) => {
+    if (ent[0] === '#') {
+      const code = ent[1] === 'x' || ent[1] === 'X' ? parseInt(ent.slice(2), 16) : parseInt(ent.slice(1), 10);
+      return code >= 0 && code <= 0x10ffff ? String.fromCodePoint(code) : whole;
+    }
+    return HTML_ENTITIES[ent.toLowerCase()] ?? whole;
+  });
+}
+
+// A value may contain escaped quotes ('Bojangles\' Coliseum'), so consume
+// `\.` escape pairs instead of stopping at the first `'`.
 const out = {};
-for (const m of block[1].matchAll(/'([\w]+)'\s*:\s*'([^']*)'/g)) {
-  out[m[1]] = m[2];
+for (const m of block[1].matchAll(/'([\w]+)'\s*:\s*'((?:[^'\\]|\\[\s\S])*)'/g)) {
+  out[m[1]] = unescapeValue(m[2]);
 }
 
 console.log(JSON.stringify(out));
