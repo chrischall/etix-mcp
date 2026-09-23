@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/chrischall/etix-mcp/compare/v1.1.1...v1.1.2) (2026-09-23)
+
+
+### Bug Fixes
+
+* surface 403 DataDome walls, keep apostrophes in names, error on non-venue pages ([#116](https://github.com/chrischall/etix-mcp/issues/116)) ([4e1b33d](https://github.com/chrischall/etix-mcp/commit/4e1b33d78f816e0210c1d19c91537e4b5a1aadb6))
+
 ## [1.1.1](https://github.com/chrischall/etix-mcp/compare/v1.1.0...v1.1.1) (2026-09-23)
 
 
