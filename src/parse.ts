@@ -336,6 +336,19 @@ export function parseVenueDetail(html: string, venueId: number): VenueDetail {
   const places = root.querySelectorAll('[itemtype$="/Place"]');
   const headerPlace = places.find((p) => !p.closest('.row.performance'));
 
+  // Anchor check, like parseEventDetail's: a real venue page carries its
+  // identity in the dataLayer and/or a header schema.org Place. Without
+  // either, this is a generic/404 page, a layout change, or a bot-wall we
+  // didn't classify — returning `{ events: [] }` would read as "this venue
+  // has no upcoming events", so fail loudly instead.
+  if (!dl.venue_id && !dl.venue_name && !headerPlace) {
+    throw new Error(
+      `Etix venue ${venueId}: could not parse the venue page — no dataLayer venue ` +
+        `identity or schema.org Place header was found. The venue id may not exist, ` +
+        `or the page was a bot-wall interstitial or a layout Etix changed.`
+    );
+  }
+
   const orgId = num(dl.org_id);
   const orgName = dl.org_name || undefined;
 

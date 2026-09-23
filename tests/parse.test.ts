@@ -180,6 +180,23 @@ describe('extractDataLayer', () => {
   });
 });
 
+describe('parseVenueDetail on a non-venue page', () => {
+  it('throws a descriptive error instead of returning an empty venue', () => {
+    expect(() => parseVenueDetail('<html><body>Not found</body></html>', 5)).toThrow(
+      /Etix venue 5: could not parse/i
+    );
+  });
+
+  it('still parses a page that has only the header Place (no dataLayer)', () => {
+    const v = parseVenueDetail(
+      '<html><body><div itemscope itemtype="http://schema.org/Place"><span itemprop="name">Hall</span></div></body></html>',
+      5
+    );
+    expect(v.name).toBe('Hall');
+    expect(v.events).toEqual([]);
+  });
+});
+
 describe('parseVenueDetail with an apostrophe in the name', () => {
   const html =
     "<html><body><script>dataLayer = [{ 'venue_id' : '5', 'venue_name' : 'Bojangles\\' Coliseum', " +
