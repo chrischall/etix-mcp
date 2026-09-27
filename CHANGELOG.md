@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.3](https://github.com/chrischall/etix-mcp/compare/v1.1.2...v1.1.3) (2026-09-27)
+
+
+### Bug Fixes
+
+* **deps:** move to [@fetchproxy](https://github.com/fetchproxy) 3.4 for ContextMint Bridge errors, capability subsets and managed pins ([#120](https://github.com/chrischall/etix-mcp/issues/120)) ([16a3659](https://github.com/chrischall/etix-mcp/commit/16a3659e48b79d8428ea47119a01992ad867e081))
+* **deps:** move to @chrischall/mcp-utils 2.8 and [@fetchproxy](https://github.com/fetchproxy) 3.4.1 for clearer browser-bridge errors ([#123](https://github.com/chrischall/etix-mcp/issues/123)) ([4ad0655](https://github.com/chrischall/etix-mcp/commit/4ad0655aefb84d0161a0b72d44d391ad7e6c2d6d))
+
 ## [1.1.2](https://github.com/chrischall/etix-mcp/compare/v1.1.1...v1.1.2) (2026-09-23)
 
 
