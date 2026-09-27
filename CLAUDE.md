@@ -47,7 +47,7 @@ src/
   tools/*.ts            # one registerXxxTools per tool
 ```
 
-- **Shared port `37149`.** The whole fetchproxy fleet binds the same concentrator port; the Transporter extension dials it. Override via `ETIX_WS_PORT`.
+- **Shared port `37149`.** The whole fetchproxy fleet binds the same concentrator port; the ContextMint Bridge extension dials it. Override via `ETIX_WS_PORT`.
 - **Bot-wall handling.** `classifyBotWall` catches the DataDome interstitial (`captcha-delivery` marker, size-guarded). The client raises a typed `BotWallError` with a "reload your etix.com tab" hint instead of feeding a captcha page to a parser.
 - **Parsers verified against real bytes.** Selectors + JSON-LD/dataLayer field names were diffed against the live DOM (venue 17987, performance 39004863), not guessed. Fixtures under `tests/fixtures/` mirror the real structure (secrets stripped).
 

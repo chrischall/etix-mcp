@@ -14,7 +14,7 @@ description: >-
 Etix fronts its whole consumer surface (`www.etix.com/ticket/...`) with a
 **DataDome** bot-wall that 403s/202s any plain `curl`/Node request
 (`captcha-delivery` interstitial). `fpx` routes the request through the
-user's own signed-in browser tab (the Transporter extension), which has
+user's own signed-in browser tab (the ContextMint Bridge extension), which has
 already cleared DataDome, so the same request succeeds. No Etix account is
 needed — this is public event-discovery data.
 
@@ -30,10 +30,11 @@ call instead of a running server.
 ```sh
 npm install -g @fetchproxy/cli              # provides `fpx`
 fpx profile add etix --domain etix.com      # only the fetch capability is needed
-fpx pair -p etix                            # prints a pair code → approve in Transporter
+fpx pair -p etix                            # prints a pair code → approve in ContextMint Bridge
 ```
 
-Requirements: the **Transporter** browser extension installed, with an open
+Requirements: the **ContextMint Bridge** browser extension installed
+(from https://github.com/nullnet-app/contextmint-bridge/releases), with an open
 `www.etix.com` tab that has finished loading (so the DataDome check
 clears), and Chrome **Site access** allowing `etix.com`. Pairing persists —
 after the first approval every later `fpx` call reuses it.

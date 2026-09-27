@@ -2,7 +2,7 @@
 
 Etix event discovery as an MCP server for Claude — search events, venues, and performers and pull full event/venue details via natural language.
 
-> ⚠️ Etix does not publish a public consumer API, and its consumer site sits behind a DataDome bot-wall. This server reads the same `/ticket/api/online/...` endpoints and server-rendered pages that etix.com itself uses, routed through your own signed-in browser tab via the [fetchproxy](https://github.com/chrischall/fetchproxy) extension. Every request acts on behalf of your existing session — your cookies, your TLS, your JS context — exactly as if you'd browsed it yourself. No Etix account is required; this is public discovery data. Use at your own discretion.
+> ⚠️ Etix does not publish a public consumer API, and its consumer site sits behind a DataDome bot-wall. This server reads the same `/ticket/api/online/...` endpoints and server-rendered pages that etix.com itself uses, routed through your own signed-in browser tab via the [ContextMint Bridge](https://github.com/nullnet-app/contextmint-bridge/releases) browser extension. Every request acts on behalf of your existing session — your cookies, your TLS, your JS context — exactly as if you'd browsed it yourself. No Etix account is required; this is public discovery data. Use at your own discretion.
 
 ## Tools
 
@@ -20,7 +20,7 @@ Etix fronts its consumer site with a DataDome interstitial that a server-side fe
 
 ## Setup
 
-See [skills/etix/SKILL.md](skills/etix/SKILL.md) for full install steps: add the server to your MCP config, install the shared fetchproxy extension, open etix.com, and approve the one-time pairing. Then run `etix_healthcheck`.
+See [skills/etix/SKILL.md](skills/etix/SKILL.md) for full install steps: add the server to your MCP config, install the shared [ContextMint Bridge](https://github.com/nullnet-app/contextmint-bridge/releases) extension, open etix.com, and approve the one-time pairing. Then run `etix_healthcheck`.
 
 ## Development
 
@@ -32,7 +32,7 @@ npm test        # vitest
 
 ## Acknowledgement of Terms
 
-By using this MCP server, you acknowledge that it uses your own etix.com session via the fetchproxy extension, that Etix offers no public consumer API (so the underlying endpoints may change at any time), and that this is an unofficial, AI-developed project with no affiliation to Etix. Use at your own discretion, consistent with Etix's Terms of Use.
+By using this MCP server, you acknowledge that it uses your own etix.com session via the ContextMint Bridge extension, that Etix offers no public consumer API (so the underlying endpoints may change at any time), and that this is an unofficial, AI-developed project with no affiliation to Etix. Use at your own discretion, consistent with Etix's Terms of Use.
 
 ## License
 
