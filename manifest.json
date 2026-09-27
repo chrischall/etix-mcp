@@ -52,7 +52,7 @@
     },
     {
       "name": "etix_healthcheck",
-      "description": "Verify the fetchproxy bridge end-to-end — no auth required"
+      "description": "Verify the ContextMint Bridge connection end-to-end — no auth required"
     }
   ]
 }
