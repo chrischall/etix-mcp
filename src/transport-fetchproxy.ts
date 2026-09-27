@@ -12,7 +12,7 @@
 // itself (via `logListening: true`).
 //
 // IMPORTANT: the whole fetchproxy fleet binds the SAME concentrator port
-// (37149). The Transporter browser extension dials that one port; the
+// (37149). The ContextMint Bridge browser extension dials that one port; the
 // first server to bind is host, the rest peer through it. A new
 // fetchproxy MCP MUST default to 37149 or the extension never connects.
 

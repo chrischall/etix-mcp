@@ -5,7 +5,7 @@ import { BotWallError, type EtixClient } from '../client.js';
 /**
  * Round-trip a small public etix.com URL (`/robots.txt`) through the full
  * bridge so the user can tell — with ONE tool call — which hop is broken:
- * the WebSocket bridge, the fetchproxy extension, or Etix itself (a DataDome
+ * the WebSocket bridge, the ContextMint Bridge extension, or Etix itself (a DataDome
  * challenge on the signed-in tab).
  *
  * The probe loop, error classification, bridge projection, result shape, and

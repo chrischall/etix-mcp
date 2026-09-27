@@ -4,7 +4,7 @@ Guidance for Claude working in this repo.
 
 ## TL;DR
 
-Etix consumer event-discovery MCP. Default and only transport: localhost WebSocket via [`@fetchproxy/server`](https://github.com/chrischall/fetchproxy) — the companion browser extension is installed separately, not embedded. Every HTTP call to etix.com is dispatched through the user's signed-in browser tab, so it rides their existing, DataDome-cleared session. No Etix account is required (public discovery data).
+Etix consumer event-discovery MCP. Default and only transport: localhost WebSocket via [`@fetchproxy/server`](https://github.com/chrischall/fetchproxy) — the companion browser extension is installed separately, not embedded. That extension is ContextMint Bridge ([nullnet-app/contextmint-bridge](https://github.com/nullnet-app/contextmint-bridge)) — the fetchproxy extension renamed and moved to the same maintainer's nullnet-app org, as [fetchproxy's README](https://github.com/chrischall/fetchproxy#extension) states; releases ship a `.sha256` beside each zip. Every HTTP call to etix.com is dispatched through the user's signed-in browser tab, so it rides their existing, DataDome-cleared session. No Etix account is required (public discovery data).
 
 This is a "Pattern A" fetchproxy MCP (every call rides through fetchproxy), not "Pattern B" (one bootstrap call then direct fetch). Etix's DataDome wall challenges any server-side fetch, so in-session routing has to be per-call.
 
@@ -47,7 +47,7 @@ src/
   tools/*.ts            # one registerXxxTools per tool
 ```
 
-- **Shared port `37149`.** The whole fetchproxy fleet binds the same concentrator port; the Transporter extension dials it. Override via `ETIX_WS_PORT`.
+- **Shared port `37149`.** The whole fetchproxy fleet binds the same concentrator port; the ContextMint Bridge extension dials it. Override via `ETIX_WS_PORT`.
 - **Bot-wall handling.** `classifyBotWall` catches the DataDome interstitial (`captcha-delivery` marker, size-guarded). The client raises a typed `BotWallError` with a "reload your etix.com tab" hint instead of feeding a captcha page to a parser.
 - **Parsers verified against real bytes.** Selectors + JSON-LD/dataLayer field names were diffed against the live DOM (venue 17987, performance 39004863), not guessed. Fixtures under `tests/fixtures/` mirror the real structure (secrets stripped).
 
