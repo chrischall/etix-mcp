@@ -22,6 +22,8 @@ Etix fronts its consumer site with a DataDome interstitial that a server-side fe
 
 See [skills/etix/SKILL.md](skills/etix/SKILL.md) for full install steps: add the server to your MCP config, install the shared [ContextMint Bridge](https://github.com/nullnet-app/contextmint-bridge/releases) extension, open etix.com, and approve the one-time pairing. Then run `etix_healthcheck`.
 
+> **Where the extension comes from.** ContextMint Bridge is the fetchproxy browser extension under its new name, from the same maintainer — fetchproxy's own README ([chrischall/fetchproxy#extension](https://github.com/chrischall/fetchproxy#extension)) points to it. Its source is public at [nullnet-app/contextmint-bridge](https://github.com/nullnet-app/contextmint-bridge): build it yourself (`npm run build`), or check a release zip against the `.sha256` file published beside it (`shasum -a 256 -c contextmint-bridge-chrome-<version>.zip.sha256`).
+
 ## Development
 
 ```bash

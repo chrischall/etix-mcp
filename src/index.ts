@@ -5,7 +5,9 @@
 //   1. Construct a FetchproxyTransport listening on 127.0.0.1:37149.
 //      The shared ContextMint Bridge Chrome/Safari extension — installed
 //      separately, not in this repo — connects here.
-//      See https://github.com/nullnet-app/contextmint-bridge/releases.
+//      See https://github.com/nullnet-app/contextmint-bridge/releases
+//      (the fetchproxy extension renamed, same maintainer — see
+//      https://github.com/chrischall/fetchproxy#extension).
 //   2. EtixClient.start() — brings the transport up. This runs BEFORE
 //      runMcp connects stdio, preserving the deferred-config-error
 //      pattern: a bridge that can't come up surfaces here, before the

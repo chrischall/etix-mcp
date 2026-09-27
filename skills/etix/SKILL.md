@@ -34,7 +34,9 @@ MCP server for Etix — natural-language search of events, venues, and performer
 Download it from [ContextMint Bridge releases](https://github.com/nullnet-app/contextmint-bridge/releases):
 
 - **Chrome:** unzip the Chrome zip, then load it at `chrome://extensions` (Developer mode → Load unpacked → the unzipped folder).
-- **Safari:** ships inside the ContextMint app — install the app and enable the extension in Safari's settings.
+- **Safari:** ships inside the ContextMint app, which has no public download link yet — use Chrome for now.
+
+ContextMint Bridge is the fetchproxy extension under its new name, from the same maintainer ([fetchproxy's README](https://github.com/chrischall/fetchproxy#extension) points to it). Its source is public at [nullnet-app/contextmint-bridge](https://github.com/nullnet-app/contextmint-bridge): build it yourself, or verify a release zip with `shasum -a 256 -c contextmint-bridge-chrome-<version>.zip.sha256` (the `.sha256` file is published beside it).
 
 All fetchproxy MCPs share one extension and one port (`37149`).
 

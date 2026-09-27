@@ -34,7 +34,9 @@ fpx pair -p etix                            # prints a pair code → approve in 
 ```
 
 Requirements: the **ContextMint Bridge** browser extension installed
-(from https://github.com/nullnet-app/contextmint-bridge/releases), with an open
+(from https://github.com/nullnet-app/contextmint-bridge/releases — the fetchproxy
+extension under its new name, same maintainer, as https://github.com/chrischall/fetchproxy#extension
+says; verify the zip with `shasum -a 256 -c <zip>.sha256` or build from source), with an open
 `www.etix.com` tab that has finished loading (so the DataDome check
 clears), and Chrome **Site access** allowing `etix.com`. Pairing persists —
 after the first approval every later `fpx` call reuses it.
