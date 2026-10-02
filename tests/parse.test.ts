@@ -178,6 +178,21 @@ describe('extractDataLayer', () => {
     );
     expect(dl).toEqual({ a: 'C:\\x', b: "Brewer's & Co", c: "Ruth's" });
   });
+
+  it('decodes entities with the shared mcp-utils semantics (fleet-audit#998)', () => {
+    const dl = extractDataLayer(
+      "<script>dataLayer = [{ 'a' : 'Jazz&nbsp;Club', 'b' : '&amp;lt;b&amp;gt;', 'c' : '&#x41;&#66;', " +
+        "'d' : '&#999999999999;', 'e' : '&copy; Etix', 'f' : 'Tom &AMP; Jerry' }]</script>"
+    );
+    expect(dl).toEqual({
+      a: 'Jazz Club', // &nbsp; is a plain space, as everywhere else the fleet scrapes
+      b: '&lt;b&gt;', // a double-escaped entity survives exactly one level
+      c: 'AB',
+      d: '&#999999999999;', // out-of-range code point is left as-is, never thrown
+      e: '&copy; Etix', // unknown named entity passes through
+      f: 'Tom & Jerry',
+    });
+  });
 });
 
 describe('parseVenueDetail on a non-venue page', () => {

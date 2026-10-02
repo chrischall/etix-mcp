@@ -32,7 +32,23 @@ if (!block) {
   process.exit(1);
 }
 
-const HTML_ENTITIES = { amp: '&', apos: "'", quot: '"', lt: '<', gt: '>', nbsp: '\u00a0' };
+// Entity decoding mirrors `decodeHtmlEntities` from
+// `@chrischall/mcp-utils/scrape` (what the server calls): numeric entities
+// with an out-of-range guard, then the named set, then `&amp;` LAST so a
+// double-escaped entity survives exactly one level. Unknown entities pass
+// through. tests/extract-datalayer-skill.test.ts pins this to the server.
+const NAMED = { nbsp: ' ', lt: '<', gt: '>', quot: '"', apos: "'" };
+function codePointOr(code, raw) {
+  if (!Number.isInteger(code) || code < 0 || code > 0x10ffff) return raw;
+  try { return String.fromCodePoint(code); } catch { return raw; }
+}
+function decodeHtmlEntities(text) {
+  return text
+    .replace(/&#(\d+);/g, (whole, d) => codePointOr(Number(d), whole))
+    .replace(/&#x([0-9a-fA-F]+);/g, (whole, h) => codePointOr(parseInt(h, 16), whole))
+    .replace(/&(nbsp|lt|gt|quot|apos);/gi, (whole, name) => NAMED[name.toLowerCase()] ?? whole)
+    .replace(/&amp;/gi, '&');
+}
 
 // Undo JS single-quoted-string escapes (`\'`, `\\`, `\xNN`, `\uNNNN`), then
 // HTML entities (`&#39;`, `&amp;`) — a name like "Bojangles' Coliseum" may
@@ -43,13 +59,7 @@ function unescapeValue(raw) {
     if (uni) return String.fromCharCode(parseInt(uni, 16));
     return { n: '\n', r: '\r', t: '\t' }[ch] ?? ch;
   });
-  return js.replace(/&(#x[0-9a-fA-F]+|#\d+|[a-zA-Z]+);/g, (whole, ent) => {
-    if (ent[0] === '#') {
-      const code = ent[1] === 'x' || ent[1] === 'X' ? parseInt(ent.slice(2), 16) : parseInt(ent.slice(1), 10);
-      return code >= 0 && code <= 0x10ffff ? String.fromCodePoint(code) : whole;
-    }
-    return HTML_ENTITIES[ent.toLowerCase()] ?? whole;
-  });
+  return decodeHtmlEntities(js);
 }
 
 // A value may contain escaped quotes ('Bojangles\' Coliseum'), so consume
