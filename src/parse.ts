@@ -15,7 +15,7 @@
 // diffed against the real bytes, not guessed — see docs/ETIX-API.md.
 
 import { parse, type HTMLElement } from 'node-html-parser';
-import { findJsonLdEntity, ogContent } from '@chrischall/mcp-utils/scrape';
+import { decodeHtmlEntities, findJsonLdEntity, ogContent } from '@chrischall/mcp-utils/scrape';
 
 const BASE = 'https://www.etix.com';
 
@@ -113,18 +113,11 @@ export function parseSuggest(raw: RawSuggest): SuggestResult {
 
 // ─── shared HTML helpers ────────────────────────────────────────────────────
 
-const HTML_ENTITIES: Record<string, string> = {
-  amp: '&',
-  apos: "'",
-  quot: '"',
-  lt: '<',
-  gt: '>',
-  nbsp: '\u00a0',
-};
-
 /** Undo JS single-quoted-string escapes (`\'`, `\\`, `\xNN`, `\uNNNN`, …)
  *  and then HTML entities (`&#39;`, `&amp;`, …) — Etix's templates may emit
- *  either form for a name like "Bojangles' Coliseum". */
+ *  either form for a name like "Bojangles' Coliseum". The entity half is the
+ *  shared `decodeHtmlEntities` (fleet-audit#998); only the JS-escape half is
+ *  Etix-specific. */
 function unescapeDataLayerValue(raw: string): string {
   const js = raw.replace(
     /\\(?:x([0-9a-fA-F]{2})|u([0-9a-fA-F]{4})|([\s\S]))/g,
@@ -134,16 +127,7 @@ function unescapeDataLayerValue(raw: string): string {
       return ({ n: '\n', r: '\r', t: '\t' } as Record<string, string>)[ch] ?? ch;
     }
   );
-  return js.replace(/&(#x[0-9a-fA-F]+|#\d+|[a-zA-Z]+);/g, (whole, ent: string) => {
-    if (ent[0] === '#') {
-      const code =
-        ent[1] === 'x' || ent[1] === 'X'
-          ? parseInt(ent.slice(2), 16)
-          : parseInt(ent.slice(1), 10);
-      return code >= 0 && code <= 0x10ffff ? String.fromCodePoint(code) : whole;
-    }
-    return HTML_ENTITIES[ent.toLowerCase()] ?? whole;
-  });
+  return decodeHtmlEntities(js);
 }
 
 /** Parse the page-level `dataLayer = [{ 'k' : 'v', ... }]` analytics object.
