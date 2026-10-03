@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.1.4](https://github.com/chrischall/etix-mcp/compare/v1.1.3...v1.1.4) (2026-10-03)
+
+
+### Bug Fixes
+
+* **deps:** adopt @chrischall/mcp-utils 2.12.0 entity decoding for dataLayer values ([#130](https://github.com/chrischall/etix-mcp/issues/130)) ([1e72d61](https://github.com/chrischall/etix-mcp/commit/1e72d61e5ee6df807c7cfcefbc39cc9c8a94356d))
+* **deps:** bump @chrischall/mcp-utils to 2.13.0 ([#132](https://github.com/chrischall/etix-mcp/issues/132)) ([3fb11c2](https://github.com/chrischall/etix-mcp/commit/3fb11c2d6692fa9669fdb0d9de4135efce39bda6))
+* **deps:** bump @fetchproxy/server ([#129](https://github.com/chrischall/etix-mcp/issues/129)) ([9a7f5d5](https://github.com/chrischall/etix-mcp/commit/9a7f5d51fd3f308cc95971971a9e24812595053c))
+* keep credentials and report edge_blocked on CDN/WAF blocks (mcp-utils 2.10.0) ([#126](https://github.com/chrischall/etix-mcp/issues/126)) ([134ddac](https://github.com/chrischall/etix-mcp/commit/134ddac0d99de1223d9d6d46329a72e3174acdbd))
+* report CDN/WAF blocks as edge_blocked, not a rejected credential (mcp-utils 2.9.0) ([#124](https://github.com/chrischall/etix-mcp/issues/124)) ([216f877](https://github.com/chrischall/etix-mcp/commit/216f877e2a4f115714da0251a722b58e6cf40034))
+
+
+### Documentation
+
+* drop the restated merge rule now covered by the fleet-policy pointer ([#131](https://github.com/chrischall/etix-mcp/issues/131)) ([6af5768](https://github.com/chrischall/etix-mcp/commit/6af5768a917c9ea28fd3a112f8d5eefa0d02545c))
+
 ## [1.1.3](https://github.com/chrischall/etix-mcp/compare/v1.1.2...v1.1.3) (2026-09-27)
 
 
