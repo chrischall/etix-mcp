@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.5](https://github.com/chrischall/etix-mcp/compare/v1.1.4...v1.1.5) (2026-10-05)
+
+
+### Bug Fixes
+
+* **deps:** require @chrischall/mcp-utils 2.14.0 and MCP SDK 2.3.0 ([#134](https://github.com/chrischall/etix-mcp/issues/134)) ([d3ff6aa](https://github.com/chrischall/etix-mcp/commit/d3ff6aa992efbc731dc6582ff5500ad848a6f752))
+
 ## [1.1.4](https://github.com/chrischall/etix-mcp/compare/v1.1.3...v1.1.4) (2026-10-03)
 
 
