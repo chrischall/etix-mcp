@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.6](https://github.com/chrischall/etix-mcp/compare/v1.1.5...v1.1.6) (2026-10-07)
+
+
+### Bug Fixes
+
+* **deps:** bump source-map-js ([#138](https://github.com/chrischall/etix-mcp/issues/138)) ([349b386](https://github.com/chrischall/etix-mcp/commit/349b3865be6455956dc749fa52eae10fddf4446f))
+* **deps:** retry the browser bridge while it awaits approval and allow opting out of confirmation prompts ([#136](https://github.com/chrischall/etix-mcp/issues/136)) ([c9af672](https://github.com/chrischall/etix-mcp/commit/c9af672bb9c479df9c2c05bc67324735a7b95d16))
+
 ## [1.1.5](https://github.com/chrischall/etix-mcp/compare/v1.1.4...v1.1.5) (2026-10-05)
 
 
