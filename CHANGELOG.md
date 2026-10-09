@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.7](https://github.com/chrischall/etix-mcp/compare/v1.1.6...v1.1.7) (2026-10-09)
+
+
+### Bug Fixes
+
+* annotate tools truthfully and sync manifests with the served tools ([#142](https://github.com/chrischall/etix-mcp/issues/142)) ([838fe7a](https://github.com/chrischall/etix-mcp/commit/838fe7a72235aee3fb85b5c95bdc77726f9daecf))
+* declare the plugin MCP config under the mcpServers key Claude Code reads ([#143](https://github.com/chrischall/etix-mcp/issues/143)) ([93a76e0](https://github.com/chrischall/etix-mcp/commit/93a76e0305dd12f194de9d746a5951c48de7b2c6))
+* **deps:** bump @modelcontextprotocol/server ([#146](https://github.com/chrischall/etix-mcp/issues/146)) ([5679c85](https://github.com/chrischall/etix-mcp/commit/5679c856bdda23cebd3e98c64fe059502309662f))
+* **deps:** update @chrischall/mcp-utils to 3.0.0 ([#141](https://github.com/chrischall/etix-mcp/issues/141)) ([f4d6b85](https://github.com/chrischall/etix-mcp/commit/f4d6b8553663489250f69dc1c70e0abd42529fb0))
+* resolve low-severity audit findings ([#139](https://github.com/chrischall/etix-mcp/issues/139)) ([77292fb](https://github.com/chrischall/etix-mcp/commit/77292fbabf06ca5c3eecc0f553bffe0ddb0b495a))
+
 ## [1.1.6](https://github.com/chrischall/etix-mcp/compare/v1.1.5...v1.1.6) (2026-10-07)
 
 
