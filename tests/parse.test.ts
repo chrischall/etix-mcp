@@ -128,6 +128,91 @@ describe('parseEventDetail', () => {
   });
 });
 
+describe('parseEventDetail offer shapes (fleet-audit#426)', () => {
+  const page = (offers: unknown): string =>
+    `<script type="application/ld+json">${JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Event',
+      name: 'Show',
+      offers,
+    })}</script>`;
+
+  it('reads a bare array of Offers with string prices', () => {
+    const ev = parseEventDetail(
+      page([
+        { '@type': 'Offer', name: 'GA', price: '25.00', priceCurrency: 'USD' },
+        { '@type': 'Offer', name: 'VIP', price: '60', priceCurrency: 'USD' },
+      ]),
+      1
+    );
+    expect(ev.offers).toEqual([
+      { name: 'GA', price: 25, currency: 'USD' },
+      { name: 'VIP', price: 60, currency: 'USD' },
+    ]);
+    expect(ev.price).toEqual({ currency: 'USD', min: 25, max: 60 });
+  });
+
+  it('reads a single Offer object', () => {
+    const ev = parseEventDetail(
+      page({
+        '@type': 'Offer',
+        price: '25.00',
+        priceCurrency: 'USD',
+        availability: 'http://schema.org/InStock',
+      }),
+      1
+    );
+    expect(ev.offers).toEqual([
+      { price: 25, currency: 'USD', availability: 'http://schema.org/InStock' },
+    ]);
+    expect(ev.price).toEqual({ currency: 'USD', min: 25, max: 25 });
+    expect(ev.availability).toBe('http://schema.org/InStock');
+  });
+
+  it('reads an AggregateOffer wrapping a single Offer', () => {
+    const ev = parseEventDetail(
+      page({ '@type': 'AggregateOffer', offers: { '@type': 'Offer', price: 0, priceCurrency: 'USD' } }),
+      1
+    );
+    expect(ev.offers).toEqual([{ price: 0, currency: 'USD' }]);
+    expect(ev.price).toEqual({ currency: 'USD', min: 0, max: 0 });
+  });
+
+  it('uses an AggregateOffer lowPrice/highPrice when it lists no offers', () => {
+    const ev = parseEventDetail(
+      page({ '@type': 'AggregateOffer', lowPrice: '15', highPrice: 65, priceCurrency: 'USD' }),
+      1
+    );
+    expect(ev.offers).toEqual([]);
+    expect(ev.price).toEqual({ currency: 'USD', min: 15, max: 65 });
+  });
+
+  it('widens the range with lowPrice/highPrice alongside offers', () => {
+    const ev = parseEventDetail(
+      page({
+        '@type': 'AggregateOffer',
+        lowPrice: 10,
+        highPrice: '99.5',
+        offers: [{ price: 20, priceCurrency: 'USD' }],
+      }),
+      1
+    );
+    expect(ev.price).toEqual({ currency: 'USD', min: 10, max: 99.5 });
+  });
+
+  it('does not invent an offer from an empty offers object', () => {
+    const ev = parseEventDetail(page({}), 1);
+    expect(ev.offers).toEqual([]);
+    expect(ev.price).toBeUndefined();
+  });
+
+  it('drops a non-numeric price instead of reporting NaN', () => {
+    const ev = parseEventDetail(page([{ name: 'TBA', price: 'Free?' }, null, 'x']), 1);
+    expect(ev.offers).toEqual([{ name: 'TBA' }]);
+    expect(ev.price).toBeUndefined();
+  });
+});
+
 describe('parseVenueDetail', () => {
   const venue = parseVenueDetail(fixture('venue.html'), 17987);
 

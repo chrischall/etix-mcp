@@ -208,6 +208,30 @@ export interface EventDetail {
   price?: { currency?: string; min?: number; max?: number };
 }
 
+/** A schema.org price: a number, or a numeric string such as "25.00". */
+function price(v: unknown): number | undefined {
+  if (typeof v === 'number') return Number.isFinite(v) ? v : undefined;
+  return typeof v === 'string' ? num(v.trim()) : undefined;
+}
+
+/** schema.org lets `Event.offers` be an AggregateOffer (with an `offers`
+ *  array or a single nested Offer), a bare array of Offers, or one Offer.
+ *  Returns the wrapper whose `availability` / `lowPrice` / `highPrice` /
+ *  `priceCurrency` apply to the whole event, plus the individual offers
+ *  (fleet-audit#426). */
+function normalizeOffers(raw: unknown): { wrap: Row; list: Row[] } {
+  if (Array.isArray(raw)) return { wrap: {}, list: raw.filter(isRecord) };
+  if (!isRecord(raw)) return { wrap: {}, list: [] };
+  const inner = raw.offers;
+  if (Array.isArray(inner)) return { wrap: raw, list: inner.filter(isRecord) };
+  if (isRecord(inner)) return { wrap: raw, list: [inner] };
+  // No nested offers: a lone Offer is its own single entry; an
+  // AggregateOffer without a list contributes only its low/high prices, and
+  // an empty/unrecognised object contributes nothing.
+  const lone = raw['@type'] === 'Offer' || 'price' in raw;
+  return { wrap: raw, list: lone ? [raw] : [] };
+}
+
 export function parseEventDetail(html: string, eventId: number): EventDetail {
   // The schema.org Event hides inside a `WebPage.mainEntity`; the shared
   // `findJsonLdEntity` walks blocks, `@graph`, and `mainEntity` for the
@@ -229,23 +253,26 @@ export function parseEventDetail(html: string, eventId: number): EventDetail {
     ? (loc.sameAs[0] as string | undefined)
     : undefined;
 
-  const offersWrap = (main.offers ?? {}) as Record<string, unknown>;
-  const rawOffers = Array.isArray(offersWrap.offers)
-    ? (offersWrap.offers as Array<Record<string, unknown>>)
-    : [];
+  const { wrap: offersWrap, list: rawOffers } = normalizeOffers(main.offers);
   const offers: EventOffer[] = rawOffers.map((o) => ({
     name: o.name as string | undefined,
-    price: o.price as number | undefined,
+    price: price(o.price),
     currency: o.priceCurrency as string | undefined,
     availability: o.availability as string | undefined,
   }));
-  const prices = offers
-    .map((o) => o.price)
-    .filter((p): p is number => typeof p === 'number');
-  const price =
+  // An AggregateOffer's lowPrice/highPrice bound the range too — and are
+  // the only prices when it lists no individual offers.
+  const prices = [
+    ...offers.map((o) => o.price),
+    price(offersWrap.lowPrice),
+    price(offersWrap.highPrice),
+  ].filter((p): p is number => p !== undefined);
+  const priceRange =
     prices.length > 0
       ? {
-          currency: offers.find((o) => o.currency)?.currency,
+          currency:
+            offers.find((o) => o.currency)?.currency ??
+            (offersWrap.priceCurrency as string | undefined),
           min: Math.min(...prices),
           max: Math.max(...prices),
         }
@@ -281,7 +308,7 @@ export function parseEventDetail(html: string, eventId: number): EventDetail {
     ...(dl.cobrand ? { cobrand: dl.cobrand } : {}),
     availability: offersWrap.availability as string | undefined,
     offers,
-    ...(price ? { price } : {}),
+    ...(priceRange ? { price: priceRange } : {}),
   };
 }
 
