@@ -61,6 +61,19 @@ describe('parseSuggest', () => {
     const empty = parseSuggest({ keywords: 'zzz' });
     expect(empty).toEqual({ venues: [], events: [], performers: [] });
   });
+
+  it.each([[null], ['nope'], [42], [[]], [true]])(
+    'treats a non-object body %j as no matches instead of throwing (fleet-audit#427)',
+    (raw) => {
+      expect(parseSuggest(raw)).toEqual({ venues: [], events: [], performers: [] });
+    }
+  );
+
+  it('skips non-array categories and non-object entries', () => {
+    expect(
+      parseSuggest({ venues: { venueId: 1 }, events: [null, 'x', { eventId: 7 }], performers: 'p' })
+    ).toEqual({ venues: [], events: [{ event_id: 7 }], performers: [] });
+  });
 });
 
 describe('parseEventDetail', () => {

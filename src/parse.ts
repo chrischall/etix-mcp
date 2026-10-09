@@ -74,14 +74,22 @@ export interface SuggestResult {
   performers: SuggestPerformer[];
 }
 
-interface RawSuggest {
-  venues?: Array<Record<string, unknown>>;
-  events?: Array<Record<string, unknown>>;
-  performers?: Array<Record<string, unknown>>;
+type Row = Record<string, unknown>;
+
+function isRecord(v: unknown): v is Row {
+  return typeof v === 'object' && v !== null && !Array.isArray(v);
 }
 
-export function parseSuggest(raw: RawSuggest): SuggestResult {
-  const venues = (raw.venues ?? []).map((v) => ({
+/** The object rows of `raw[key]`, or `[]` when the body or the category
+ *  isn't the expected shape (a `null`/non-object body, a non-array
+ *  category) — "no matches", never a TypeError (fleet-audit#427). */
+function rows(raw: unknown, key: string): Row[] {
+  const list = isRecord(raw) ? raw[key] : undefined;
+  return Array.isArray(list) ? list.filter(isRecord) : [];
+}
+
+export function parseSuggest(raw: unknown): SuggestResult {
+  const venues = rows(raw, 'venues').map((v) => ({
     venue_id: v.venueId as number | undefined,
     name: v.venueName as string | undefined,
     organization: v.organization as string | undefined,
@@ -91,7 +99,7 @@ export function parseSuggest(raw: RawSuggest): SuggestResult {
     country: v.country as string | undefined,
     url: abs(v.venueSaleUrl as string | undefined),
   }));
-  const events = (raw.events ?? []).map((e) => ({
+  const events = rows(raw, 'events').map((e) => ({
     event_id: e.eventId as number | undefined,
     name: e.eventName as string | undefined,
     category: e.categoryName as string | undefined,
@@ -103,7 +111,7 @@ export function parseSuggest(raw: RawSuggest): SuggestResult {
     image_url: e.imageUrl as string | undefined,
     url: abs((e.directSaleUrl as string | undefined) ?? undefined),
   }));
-  const performers = (raw.performers ?? []).map((p) => ({
+  const performers = rows(raw, 'performers').map((p) => ({
     performer_id: p.id as number | undefined,
     name: p.name as string | undefined,
     image_url: p.imageUrl as string | undefined,

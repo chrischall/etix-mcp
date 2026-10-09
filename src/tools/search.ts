@@ -39,7 +39,7 @@ export function registerSearchTools(server: McpServer, client: EtixClient): void
       }),
     },
     async ({ keywords }) => {
-      const raw = await client.fetchJson<Record<string, never>>(
+      const raw = await client.fetchJson<unknown>(
         `/ticket/api/online/search/suggest?keywords=${encodeURIComponent(keywords)}`
       );
       const result = parseSuggest(raw);

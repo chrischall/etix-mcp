@@ -55,4 +55,31 @@ describe('etix_find_location', () => {
     );
     await h.close();
   });
+
+  it.each([[null], ['nope'], [[]], [{}], [{ city: 'Nowhere' }], [{ latitude: 'x', longitude: 1 }]])(
+    'returns an explicit no-match for an unresolvable lookup body %j (fleet-audit#427)',
+    async (body) => {
+      const postJson = vi.fn().mockResolvedValue(body);
+      const client = { postJson } as unknown as EtixClient;
+      const h = await createTestHarness((server) =>
+        registerLocationTools(server, client)
+      );
+      const res = await h.callTool('etix_find_location', { query: 'Atlantis' });
+      expect(res.isError).toBeFalsy();
+      const data = parseToolResult(res);
+      expect(data).toMatchObject({ query: 'Atlantis', found: false });
+      expect(data.message).toMatch(/no location matched/i);
+      expect('latitude' in data).toBe(false);
+      await h.close();
+    }
+  );
+
+  it('marks a resolved lookup as found', async () => {
+    const postJson = vi.fn().mockResolvedValue({ latitude: 1.5, longitude: -2.5, city: 'X' });
+    const client = { postJson } as unknown as EtixClient;
+    const h = await createTestHarness((server) => registerLocationTools(server, client));
+    const data = parseToolResult(await h.callTool('etix_find_location', { query: 'X' }));
+    expect(data).toMatchObject({ found: true, latitude: 1.5, longitude: -2.5, city: 'X' });
+    await h.close();
+  });
 });
