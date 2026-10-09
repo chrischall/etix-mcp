@@ -20,7 +20,8 @@
 // DataDome interstitial, so every request rides the user's signed-in,
 // already-cleared etix.com browser tab via the fetchproxy bridge. No
 // Etix account is required — this is public event-discovery data.
-import { runMcp, readEnvVar } from '@chrischall/mcp-utils';
+import { runMcp } from '@chrischall/mcp-utils';
+import { bridgePort } from './config.js';
 import { EtixClient } from './client.js';
 import { FetchproxyTransport } from './transport-fetchproxy.js';
 import { registerSearchTools } from './tools/search.js';
@@ -30,8 +31,7 @@ import { registerLocationTools } from './tools/location.js';
 import { registerHealthcheckTools } from './tools/healthcheck.js';
 import { VERSION } from './version.js';
 
-const portRaw = readEnvVar('ETIX_WS_PORT');
-const port = portRaw ? Number(portRaw) : undefined;
+const port = bridgePort();
 
 const transport = new FetchproxyTransport({ port, version: VERSION });
 
@@ -52,7 +52,7 @@ await runMcp({
     (server) => registerHealthcheckTools(server, client),
   ],
   banner:
-    `[etix-mcp] v${VERSION} — WebSocket bridge via @fetchproxy/server on 127.0.0.1:${port ?? 37149}. ` +
+    `[etix-mcp] v${VERSION} — WebSocket bridge via @fetchproxy/server on 127.0.0.1:${port}. ` +
     'Install the ContextMint Bridge extension (see https://github.com/nullnet-app/contextmint-bridge/releases) ' +
     'and open etix.com. This project was developed and is maintained by AI (Claude). ' +
     'Use at your own discretion.',

@@ -74,14 +74,22 @@ export interface SuggestResult {
   performers: SuggestPerformer[];
 }
 
-interface RawSuggest {
-  venues?: Array<Record<string, unknown>>;
-  events?: Array<Record<string, unknown>>;
-  performers?: Array<Record<string, unknown>>;
+type Row = Record<string, unknown>;
+
+function isRecord(v: unknown): v is Row {
+  return typeof v === 'object' && v !== null && !Array.isArray(v);
 }
 
-export function parseSuggest(raw: RawSuggest): SuggestResult {
-  const venues = (raw.venues ?? []).map((v) => ({
+/** The object rows of `raw[key]`, or `[]` when the body or the category
+ *  isn't the expected shape (a `null`/non-object body, a non-array
+ *  category) — "no matches", never a TypeError (fleet-audit#427). */
+function rows(raw: unknown, key: string): Row[] {
+  const list = isRecord(raw) ? raw[key] : undefined;
+  return Array.isArray(list) ? list.filter(isRecord) : [];
+}
+
+export function parseSuggest(raw: unknown): SuggestResult {
+  const venues = rows(raw, 'venues').map((v) => ({
     venue_id: v.venueId as number | undefined,
     name: v.venueName as string | undefined,
     organization: v.organization as string | undefined,
@@ -91,7 +99,7 @@ export function parseSuggest(raw: RawSuggest): SuggestResult {
     country: v.country as string | undefined,
     url: abs(v.venueSaleUrl as string | undefined),
   }));
-  const events = (raw.events ?? []).map((e) => ({
+  const events = rows(raw, 'events').map((e) => ({
     event_id: e.eventId as number | undefined,
     name: e.eventName as string | undefined,
     category: e.categoryName as string | undefined,
@@ -103,7 +111,7 @@ export function parseSuggest(raw: RawSuggest): SuggestResult {
     image_url: e.imageUrl as string | undefined,
     url: abs((e.directSaleUrl as string | undefined) ?? undefined),
   }));
-  const performers = (raw.performers ?? []).map((p) => ({
+  const performers = rows(raw, 'performers').map((p) => ({
     performer_id: p.id as number | undefined,
     name: p.name as string | undefined,
     image_url: p.imageUrl as string | undefined,
@@ -130,16 +138,32 @@ function unescapeDataLayerValue(raw: string): string {
   return decodeHtmlEntities(js);
 }
 
+/** Slice out the body of the first `dataLayer = [{ … }]` block, or
+ *  `undefined` when there is none. Two linear scans — find the opener, then
+ *  the first `}]` after it — instead of one lazy `[\s\S]*?` regex, which
+ *  re-ran to end-of-input for every opener on a page that never closes the
+ *  block (O(occurrences × length); fleet-audit#997). Same result as the old
+ *  regex: if the first opener has no `}]` after it, no later one can. */
+function dataLayerBody(html: string): string | undefined {
+  const open = /dataLayer\s*=\s*\[\s*\{/.exec(html);
+  if (!open) return undefined;
+  const from = open.index + open[0].length;
+  const close = /\}\s*\]/g;
+  close.lastIndex = from;
+  const end = close.exec(html);
+  return end ? html.slice(from, end.index) : undefined;
+}
+
 /** Parse the page-level `dataLayer = [{ 'k' : 'v', ... }]` analytics object.
  *  It's single-quoted (not valid JSON), so we scrape the `'key' : 'value'`
  *  pairs directly. A value may contain escaped quotes (`'Bojangles\' Coliseum'`),
  *  so the value pattern consumes `\.` escape pairs rather than stopping at
  *  the first `'`. Returns a flat, unescaped string map. */
 export function extractDataLayer(html: string): Record<string, string> {
-  const block = html.match(/dataLayer\s*=\s*\[\s*\{([\s\S]*?)\}\s*\]/);
+  const body = dataLayerBody(html);
   const out: Record<string, string> = {};
-  if (!block) return out;
-  for (const m of block[1].matchAll(/'([\w]+)'\s*:\s*'((?:[^'\\]|\\[\s\S])*)'/g)) {
+  if (body === undefined) return out;
+  for (const m of body.matchAll(/'([\w]+)'\s*:\s*'((?:[^'\\]|\\[\s\S])*)'/g)) {
     out[m[1]] = unescapeDataLayerValue(m[2]);
   }
   return out;
@@ -184,6 +208,30 @@ export interface EventDetail {
   price?: { currency?: string; min?: number; max?: number };
 }
 
+/** A schema.org price: a number, or a numeric string such as "25.00". */
+function price(v: unknown): number | undefined {
+  if (typeof v === 'number') return Number.isFinite(v) ? v : undefined;
+  return typeof v === 'string' ? num(v.trim()) : undefined;
+}
+
+/** schema.org lets `Event.offers` be an AggregateOffer (with an `offers`
+ *  array or a single nested Offer), a bare array of Offers, or one Offer.
+ *  Returns the wrapper whose `availability` / `lowPrice` / `highPrice` /
+ *  `priceCurrency` apply to the whole event, plus the individual offers
+ *  (fleet-audit#426). */
+function normalizeOffers(raw: unknown): { wrap: Row; list: Row[] } {
+  if (Array.isArray(raw)) return { wrap: {}, list: raw.filter(isRecord) };
+  if (!isRecord(raw)) return { wrap: {}, list: [] };
+  const inner = raw.offers;
+  if (Array.isArray(inner)) return { wrap: raw, list: inner.filter(isRecord) };
+  if (isRecord(inner)) return { wrap: raw, list: [inner] };
+  // No nested offers: a lone Offer is its own single entry; an
+  // AggregateOffer without a list contributes only its low/high prices, and
+  // an empty/unrecognised object contributes nothing.
+  const lone = raw['@type'] === 'Offer' || 'price' in raw;
+  return { wrap: raw, list: lone ? [raw] : [] };
+}
+
 export function parseEventDetail(html: string, eventId: number): EventDetail {
   // The schema.org Event hides inside a `WebPage.mainEntity`; the shared
   // `findJsonLdEntity` walks blocks, `@graph`, and `mainEntity` for the
@@ -205,23 +253,26 @@ export function parseEventDetail(html: string, eventId: number): EventDetail {
     ? (loc.sameAs[0] as string | undefined)
     : undefined;
 
-  const offersWrap = (main.offers ?? {}) as Record<string, unknown>;
-  const rawOffers = Array.isArray(offersWrap.offers)
-    ? (offersWrap.offers as Array<Record<string, unknown>>)
-    : [];
+  const { wrap: offersWrap, list: rawOffers } = normalizeOffers(main.offers);
   const offers: EventOffer[] = rawOffers.map((o) => ({
     name: o.name as string | undefined,
-    price: o.price as number | undefined,
+    price: price(o.price),
     currency: o.priceCurrency as string | undefined,
     availability: o.availability as string | undefined,
   }));
-  const prices = offers
-    .map((o) => o.price)
-    .filter((p): p is number => typeof p === 'number');
-  const price =
+  // An AggregateOffer's lowPrice/highPrice bound the range too — and are
+  // the only prices when it lists no individual offers.
+  const prices = [
+    ...offers.map((o) => o.price),
+    price(offersWrap.lowPrice),
+    price(offersWrap.highPrice),
+  ].filter((p): p is number => p !== undefined);
+  const priceRange =
     prices.length > 0
       ? {
-          currency: offers.find((o) => o.currency)?.currency,
+          currency:
+            offers.find((o) => o.currency)?.currency ??
+            (offersWrap.priceCurrency as string | undefined),
           min: Math.min(...prices),
           max: Math.max(...prices),
         }
@@ -257,7 +308,7 @@ export function parseEventDetail(html: string, eventId: number): EventDetail {
     ...(dl.cobrand ? { cobrand: dl.cobrand } : {}),
     availability: offersWrap.availability as string | undefined,
     offers,
-    ...(price ? { price } : {}),
+    ...(priceRange ? { price: priceRange } : {}),
   };
 }
 

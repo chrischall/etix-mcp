@@ -36,6 +36,7 @@ src/
   index.ts              # entry — builds FetchproxyTransport, EtixClient,
                         #   registers tool groups, connects stdio transport
   version.ts            # single VERSION source (x-release-please-version marker)
+  config.ts             # DEFAULT_PORT + bridgePort() (ETIX_WS_PORT via readPortEnv)
   transport.ts          # EtixTransport interface
   transport-fetchproxy.ts # thin class over @chrischall/mcp-utils/fetchproxy's
                         #   createFetchproxyTransport verb adapter; ETIX_DEBUG timing

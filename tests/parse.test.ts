@@ -61,6 +61,19 @@ describe('parseSuggest', () => {
     const empty = parseSuggest({ keywords: 'zzz' });
     expect(empty).toEqual({ venues: [], events: [], performers: [] });
   });
+
+  it.each([[null], ['nope'], [42], [[]], [true]])(
+    'treats a non-object body %j as no matches instead of throwing (fleet-audit#427)',
+    (raw) => {
+      expect(parseSuggest(raw)).toEqual({ venues: [], events: [], performers: [] });
+    }
+  );
+
+  it('skips non-array categories and non-object entries', () => {
+    expect(
+      parseSuggest({ venues: { venueId: 1 }, events: [null, 'x', { eventId: 7 }], performers: 'p' })
+    ).toEqual({ venues: [], events: [{ event_id: 7 }], performers: [] });
+  });
 });
 
 describe('parseEventDetail', () => {
@@ -112,6 +125,91 @@ describe('parseEventDetail', () => {
     expect(() => parseEventDetail('<html><body>nope</body></html>', 1)).toThrow(
       /could not parse/i
     );
+  });
+});
+
+describe('parseEventDetail offer shapes (fleet-audit#426)', () => {
+  const page = (offers: unknown): string =>
+    `<script type="application/ld+json">${JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Event',
+      name: 'Show',
+      offers,
+    })}</script>`;
+
+  it('reads a bare array of Offers with string prices', () => {
+    const ev = parseEventDetail(
+      page([
+        { '@type': 'Offer', name: 'GA', price: '25.00', priceCurrency: 'USD' },
+        { '@type': 'Offer', name: 'VIP', price: '60', priceCurrency: 'USD' },
+      ]),
+      1
+    );
+    expect(ev.offers).toEqual([
+      { name: 'GA', price: 25, currency: 'USD' },
+      { name: 'VIP', price: 60, currency: 'USD' },
+    ]);
+    expect(ev.price).toEqual({ currency: 'USD', min: 25, max: 60 });
+  });
+
+  it('reads a single Offer object', () => {
+    const ev = parseEventDetail(
+      page({
+        '@type': 'Offer',
+        price: '25.00',
+        priceCurrency: 'USD',
+        availability: 'http://schema.org/InStock',
+      }),
+      1
+    );
+    expect(ev.offers).toEqual([
+      { price: 25, currency: 'USD', availability: 'http://schema.org/InStock' },
+    ]);
+    expect(ev.price).toEqual({ currency: 'USD', min: 25, max: 25 });
+    expect(ev.availability).toBe('http://schema.org/InStock');
+  });
+
+  it('reads an AggregateOffer wrapping a single Offer', () => {
+    const ev = parseEventDetail(
+      page({ '@type': 'AggregateOffer', offers: { '@type': 'Offer', price: 0, priceCurrency: 'USD' } }),
+      1
+    );
+    expect(ev.offers).toEqual([{ price: 0, currency: 'USD' }]);
+    expect(ev.price).toEqual({ currency: 'USD', min: 0, max: 0 });
+  });
+
+  it('uses an AggregateOffer lowPrice/highPrice when it lists no offers', () => {
+    const ev = parseEventDetail(
+      page({ '@type': 'AggregateOffer', lowPrice: '15', highPrice: 65, priceCurrency: 'USD' }),
+      1
+    );
+    expect(ev.offers).toEqual([]);
+    expect(ev.price).toEqual({ currency: 'USD', min: 15, max: 65 });
+  });
+
+  it('widens the range with lowPrice/highPrice alongside offers', () => {
+    const ev = parseEventDetail(
+      page({
+        '@type': 'AggregateOffer',
+        lowPrice: 10,
+        highPrice: '99.5',
+        offers: [{ price: 20, priceCurrency: 'USD' }],
+      }),
+      1
+    );
+    expect(ev.price).toEqual({ currency: 'USD', min: 10, max: 99.5 });
+  });
+
+  it('does not invent an offer from an empty offers object', () => {
+    const ev = parseEventDetail(page({}), 1);
+    expect(ev.offers).toEqual([]);
+    expect(ev.price).toBeUndefined();
+  });
+
+  it('drops a non-numeric price instead of reporting NaN', () => {
+    const ev = parseEventDetail(page([{ name: 'TBA', price: 'Free?' }, null, 'x']), 1);
+    expect(ev.offers).toEqual([{ name: 'TBA' }]);
+    expect(ev.price).toBeUndefined();
   });
 });
 
@@ -192,6 +290,23 @@ describe('extractDataLayer', () => {
       e: '&copy; Etix', // unknown named entity passes through
       f: 'Tom & Jerry',
     });
+  });
+
+  it('stays linear on an unterminated `dataLayer = [{` flood (fleet-audit#997)', () => {
+    // A hostile/MITM'd page that repeats the opener and never closes `}]`
+    // drove the old lazy regex to end-of-input once per occurrence
+    // (O(occurrences × length): 1.7 MB took ~2 s).
+    const html = 'dataLayer = [{ '.repeat(120_000); // ~1.8 MB
+    const t0 = performance.now();
+    expect(extractDataLayer(html)).toEqual({});
+    expect(performance.now() - t0).toBeLessThan(250);
+  });
+
+  it('reads the first block and ignores pairs after its closing `}]`', () => {
+    const dl = extractDataLayer(
+      "x dataLayer = [ { 'a' : '1' } ] ; other = [{ 'b' : '2' }]; dataLayer = [{ 'c' : '3' }]"
+    );
+    expect(dl).toEqual({ a: '1' });
   });
 });
 

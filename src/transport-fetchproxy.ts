@@ -32,6 +32,7 @@ import type {
   FetchResult,
   EtixTransport,
 } from './transport.js';
+import { DEFAULT_PORT } from './config.js';
 
 // Re-exported so downstream callers (healthcheck, future tools) can still
 // `import { FetchproxyBridgeDownError } from './transport-fetchproxy.js'`.
@@ -43,7 +44,6 @@ export {
 };
 export type { BridgeError };
 
-const DEFAULT_PORT = 37_149;
 
 const DEBUG = process.env.ETIX_DEBUG === '1';
 

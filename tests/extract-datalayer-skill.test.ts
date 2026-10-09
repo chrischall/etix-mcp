@@ -27,4 +27,18 @@ describe('skills/etix-fpx extract-datalayer.mjs', () => {
     const out = execFileSync(process.execPath, [SCRIPT, '-'], { input: html, encoding: 'utf8' });
     expect(JSON.parse(out)).toEqual(extractDataLayer(html));
   });
+
+  it('stays linear on an unterminated `dataLayer = [{` flood (fleet-audit#997)', () => {
+    const html = 'dataLayer = [{ '.repeat(120_000);
+    const t0 = performance.now();
+    let failed = false;
+    try {
+      execFileSync(process.execPath, [SCRIPT, '-'], { input: html, encoding: 'utf8', stdio: 'pipe' });
+    } catch {
+      failed = true; // no block found -> exit 1, same as before
+    }
+    expect(failed).toBe(true);
+    // Node startup dominates; the old regex alone took ~2 s on this input.
+    expect(performance.now() - t0).toBeLessThan(1_000);
+  });
 });
