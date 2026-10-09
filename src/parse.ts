@@ -130,16 +130,32 @@ function unescapeDataLayerValue(raw: string): string {
   return decodeHtmlEntities(js);
 }
 
+/** Slice out the body of the first `dataLayer = [{ … }]` block, or
+ *  `undefined` when there is none. Two linear scans — find the opener, then
+ *  the first `}]` after it — instead of one lazy `[\s\S]*?` regex, which
+ *  re-ran to end-of-input for every opener on a page that never closes the
+ *  block (O(occurrences × length); fleet-audit#997). Same result as the old
+ *  regex: if the first opener has no `}]` after it, no later one can. */
+function dataLayerBody(html: string): string | undefined {
+  const open = /dataLayer\s*=\s*\[\s*\{/.exec(html);
+  if (!open) return undefined;
+  const from = open.index + open[0].length;
+  const close = /\}\s*\]/g;
+  close.lastIndex = from;
+  const end = close.exec(html);
+  return end ? html.slice(from, end.index) : undefined;
+}
+
 /** Parse the page-level `dataLayer = [{ 'k' : 'v', ... }]` analytics object.
  *  It's single-quoted (not valid JSON), so we scrape the `'key' : 'value'`
  *  pairs directly. A value may contain escaped quotes (`'Bojangles\' Coliseum'`),
  *  so the value pattern consumes `\.` escape pairs rather than stopping at
  *  the first `'`. Returns a flat, unescaped string map. */
 export function extractDataLayer(html: string): Record<string, string> {
-  const block = html.match(/dataLayer\s*=\s*\[\s*\{([\s\S]*?)\}\s*\]/);
+  const body = dataLayerBody(html);
   const out: Record<string, string> = {};
-  if (!block) return out;
-  for (const m of block[1].matchAll(/'([\w]+)'\s*:\s*'((?:[^'\\]|\\[\s\S])*)'/g)) {
+  if (body === undefined) return out;
+  for (const m of body.matchAll(/'([\w]+)'\s*:\s*'((?:[^'\\]|\\[\s\S])*)'/g)) {
     out[m[1]] = unescapeDataLayerValue(m[2]);
   }
   return out;

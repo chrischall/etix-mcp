@@ -26,8 +26,21 @@ if (!fileArg) {
 
 const html = fileArg === '-' ? readFileSync(0, 'utf8') : readFileSync(fileArg, 'utf8');
 
-const block = html.match(/dataLayer\s*=\s*\[\s*\{([\s\S]*?)\}\s*\]/);
-if (!block) {
+// Find the opener, then the first `}]` after it — two linear scans rather
+// than one lazy `[\s\S]*?` regex, which re-ran to end-of-input for every
+// opener on a page that never closes the block (fleet-audit#997).
+function dataLayerBody(text) {
+  const open = /dataLayer\s*=\s*\[\s*\{/.exec(text);
+  if (!open) return undefined;
+  const from = open.index + open[0].length;
+  const close = /\}\s*\]/g;
+  close.lastIndex = from;
+  const end = close.exec(text);
+  return end ? text.slice(from, end.index) : undefined;
+}
+
+const body = dataLayerBody(html);
+if (body === undefined) {
   console.error('extract-datalayer: no "dataLayer = [{...}]" block found in the page');
   process.exit(1);
 }
@@ -65,7 +78,7 @@ function unescapeValue(raw) {
 // A value may contain escaped quotes ('Bojangles\' Coliseum'), so consume
 // `\.` escape pairs instead of stopping at the first `'`.
 const out = {};
-for (const m of block[1].matchAll(/'([\w]+)'\s*:\s*'((?:[^'\\]|\\[\s\S])*)'/g)) {
+for (const m of body.matchAll(/'([\w]+)'\s*:\s*'((?:[^'\\]|\\[\s\S])*)'/g)) {
   out[m[1]] = unescapeValue(m[2]);
 }
 

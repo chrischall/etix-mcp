@@ -193,6 +193,23 @@ describe('extractDataLayer', () => {
       f: 'Tom & Jerry',
     });
   });
+
+  it('stays linear on an unterminated `dataLayer = [{` flood (fleet-audit#997)', () => {
+    // A hostile/MITM'd page that repeats the opener and never closes `}]`
+    // drove the old lazy regex to end-of-input once per occurrence
+    // (O(occurrences × length): 1.7 MB took ~2 s).
+    const html = 'dataLayer = [{ '.repeat(120_000); // ~1.8 MB
+    const t0 = performance.now();
+    expect(extractDataLayer(html)).toEqual({});
+    expect(performance.now() - t0).toBeLessThan(250);
+  });
+
+  it('reads the first block and ignores pairs after its closing `}]`', () => {
+    const dl = extractDataLayer(
+      "x dataLayer = [ { 'a' : '1' } ] ; other = [{ 'b' : '2' }]; dataLayer = [{ 'c' : '3' }]"
+    );
+    expect(dl).toEqual({ a: '1' });
+  });
 });
 
 describe('parseVenueDetail on a non-venue page', () => {
