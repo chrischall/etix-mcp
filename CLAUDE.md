@@ -50,6 +50,7 @@ src/
 
 - **Shared port `37149`.** The whole fetchproxy fleet binds the same concentrator port; the ContextMint Bridge extension dials it. Override via `ETIX_WS_PORT`.
 - **Bot-wall handling.** `classifyBotWall` catches the DataDome interstitial (`captcha-delivery` marker, size-guarded). The client raises a typed `BotWallError` with a "reload your etix.com tab" hint instead of feeding a captcha page to a parser.
+- **Bundle `--define`s three inert env reads** so the fleet env lint (which scans `dist/`) sees only keys the server honours: `FETCHPROXY_WS_PORT` (we always pass `port`, so fetchproxy never consults it — `ETIX_WS_PORT` is the knob) and ws's `WS_NO_BUFFER_UTIL` / `WS_NO_UTF_8_VALIDATE` (the optional native addons are never installed beside the bundle, so they can never load). The honoured keys — `ETIX_WS_PORT`, `ETIX_DEBUG`, `FETCHPROXY_WS_HOST`, `FETCHPROXY_IDENTITY_DIR` — are declared in manifest.json and server.json, pinned by `tests/manifest.test.ts`.
 - **Parsers verified against real bytes.** Selectors + JSON-LD/dataLayer field names were diffed against the live DOM (venue 17987, performance 39004863), not guessed. Fixtures under `tests/fixtures/` mirror the real structure (secrets stripped).
 
 ## Conventions
