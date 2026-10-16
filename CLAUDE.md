@@ -38,8 +38,8 @@ src/
   version.ts            # single VERSION source (x-release-please-version marker)
   config.ts             # DEFAULT_PORT + bridgePort() (ETIX_WS_PORT via readPortEnv)
   transport.ts          # EtixTransport interface
-  transport-fetchproxy.ts # thin class over @chrischall/mcp-utils/fetchproxy's
-                        #   createFetchproxyTransport verb adapter; ETIX_DEBUG timing
+  transport-fetchproxy.ts # thin factory over @chrischall/mcp-utils/fetchproxy:
+                        #   createEtixTransport(): createFetchproxyTransport with debugEnvVar ETIX_DEBUG
   client.ts             # EtixClient.fetchHtml / fetchJson / postJson
                         #   + DataDome bot-wall detection (classifyBotWall → BotWallError)
   parse.ts              # parseSuggest / parseEventDetail / parseVenueDetail

@@ -2,7 +2,7 @@
 // etix-mcp entrypoint.
 //
 // Boot sequence:
-//   1. Construct a FetchproxyTransport listening on 127.0.0.1:37149.
+//   1. Build the fetchproxy bridge transport (createEtixTransport) on 127.0.0.1:37149.
 //      The shared ContextMint Bridge Chrome/Safari extension — installed
 //      separately, not in this repo — connects here.
 //      See https://github.com/nullnet-app/contextmint-bridge/releases
@@ -23,7 +23,7 @@
 import { runMcp } from '@chrischall/mcp-utils';
 import { bridgePort } from './config.js';
 import { EtixClient } from './client.js';
-import { FetchproxyTransport } from './transport-fetchproxy.js';
+import { createEtixTransport } from './transport-fetchproxy.js';
 import { registerSearchTools } from './tools/search.js';
 import { registerEventTools } from './tools/event.js';
 import { registerVenueTools } from './tools/venue.js';
@@ -33,7 +33,7 @@ import { VERSION } from './version.js';
 
 const port = bridgePort();
 
-const transport = new FetchproxyTransport({ port, version: VERSION });
+const transport = createEtixTransport({ port, version: VERSION });
 
 const client = new EtixClient({ transport });
 // Bring the bridge up BEFORE runMcp connects stdio (deferred-config-error
