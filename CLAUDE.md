@@ -33,7 +33,7 @@ All tools are **read-only** — there are no write/mutating tools (buying ticket
 
 ```
 src/
-  index.ts              # entry — builds FetchproxyTransport, EtixClient,
+  index.ts              # entry — builds the bridge (createEtixTransport), EtixClient,
                         #   registers tool groups, connects stdio transport
   version.ts            # single VERSION source (x-release-please-version marker)
   config.ts             # DEFAULT_PORT + bridgePort() (ETIX_WS_PORT via readPortEnv)
