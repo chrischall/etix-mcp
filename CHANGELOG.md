@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.8](https://github.com/chrischall/etix-mcp/compare/v1.1.7...v1.1.8) (2026-10-16)
+
+
+### Bug Fixes
+
+* **errors:** give Etix HTTP and parse failures an actionable hint ([#147](https://github.com/chrischall/etix-mcp/issues/147)) ([8e7dd66](https://github.com/chrischall/etix-mcp/commit/8e7dd66ef8cc8f4fcddafbfcd9c7e961019b2d31))
+
+
+### Documentation
+
+* name createEtixTransport in the CLAUDE.md architecture map ([#150](https://github.com/chrischall/etix-mcp/issues/150)) ([1d1f05f](https://github.com/chrischall/etix-mcp/commit/1d1f05ffdf413a18ab0d9a250cbde6d7e08d1023))
+
 ## [1.1.7](https://github.com/chrischall/etix-mcp/compare/v1.1.6...v1.1.7) (2026-10-09)
 
 
