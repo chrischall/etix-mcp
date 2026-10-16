@@ -15,6 +15,7 @@
 // diffed against the real bytes, not guessed — see docs/ETIX-API.md.
 
 import { parse, type HTMLElement } from 'node-html-parser';
+import { McpToolError } from '@chrischall/mcp-utils';
 import { decodeHtmlEntities, findJsonLdEntity, ogContent } from '@chrischall/mcp-utils/scrape';
 
 const BASE = 'https://www.etix.com';
@@ -238,10 +239,14 @@ export function parseEventDetail(html: string, eventId: number): EventDetail {
   // `@type === 'Event'` node (consolidates etix's local `extractEventJsonLd`).
   const main = findJsonLdEntity(html, 'Event');
   if (!main) {
-    throw new Error(
+    throw new McpToolError(
       `Etix event ${eventId}: could not parse the event page — no schema.org JSON-LD ` +
         `Event block was found. The page may have been a bot-wall interstitial, a 404, ` +
-        `or a layout Etix changed.`
+        `or a layout Etix changed.`,
+      {
+        hint:
+          'Check the event id (take it from etix_search), then reload your etix.com tab and retry.',
+      }
     );
   }
   const dl = extractDataLayer(html);
@@ -377,10 +382,14 @@ export function parseVenueDetail(html: string, venueId: number): VenueDetail {
   // didn't classify — returning `{ events: [] }` would read as "this venue
   // has no upcoming events", so fail loudly instead.
   if (!dl.venue_id && !dl.venue_name && !headerPlace) {
-    throw new Error(
+    throw new McpToolError(
       `Etix venue ${venueId}: could not parse the venue page — no dataLayer venue ` +
         `identity or schema.org Place header was found. The venue id may not exist, ` +
-        `or the page was a bot-wall interstitial or a layout Etix changed.`
+        `or the page was a bot-wall interstitial or a layout Etix changed.`,
+      {
+        hint:
+          'Check the venue id (take it from etix_search), then reload your etix.com tab and retry.',
+      }
     );
   }
 

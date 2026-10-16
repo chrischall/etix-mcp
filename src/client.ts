@@ -12,7 +12,7 @@
 // When a response IS the bot-wall (the user's tab lost its DataDome
 // clearance), classifyBotWall catches it and we raise a typed,
 // actionable BotWallError instead of handing a captcha page to a parser.
-import { formatApiError, BotWallError } from '@chrischall/mcp-utils';
+import { formatApiError, BotWallError, McpToolError } from '@chrischall/mcp-utils';
 import { classifyBotWall } from '@chrischall/mcp-utils/fetchproxy';
 import type {
   BridgeProbeResult,
@@ -103,8 +103,14 @@ export class EtixClient {
     try {
       return JSON.parse(body) as T;
     } catch (e) {
-      throw new Error(
-        `Etix ${method} ${path} — response was not JSON: ${(e as Error).message}`
+      throw new McpToolError(
+        `Etix ${method} ${path} — response was not JSON: ${(e as Error).message}`,
+        {
+          hint:
+            'Etix answered with a page instead of data — usually an interstitial or a ' +
+            'layout change. Reload your etix.com tab and retry.',
+          cause: e,
+        }
       );
     }
   }
@@ -115,8 +121,16 @@ export class EtixClient {
     // an Etix error page that echoes a session token can't leak into a
     // tool result. Whitespace-collapse first to keep a single-line preview.
     const collapsed = result.body.replace(/\s+/g, ' ').trim();
-    throw new Error(
-      formatApiError(result.status, method, path, collapsed, { service: 'Etix' })
+    throw new McpToolError(
+      formatApiError(result.status, method, path, collapsed, { service: 'Etix' }),
+      {
+        status: result.status,
+        kind: 'http',
+        hint:
+          result.status === 404
+            ? 'Check the id — take event/venue ids from etix_search results.'
+            : 'Reload your etix.com tab (signed in, past any check) and retry.',
+      }
     );
   }
 
