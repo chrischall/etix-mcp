@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
+import { McpToolError } from '@chrischall/mcp-utils';
 import { EtixClient, BotWallError } from '../src/client.js';
 import type { EtixTransport, FetchResult } from '../src/transport.js';
 
@@ -71,6 +72,25 @@ describe('EtixClient', () => {
       transport: stubTransport({ status: 404, body: 'not found' }),
     });
     await expect(client.fetchJson('/ticket/api/online/x')).rejects.toThrow(/Etix/);
+  });
+
+  it('non-2xx is an McpToolError with status, kind http and a hint (fleet-audit#1239)', async () => {
+    const client = new EtixClient({
+      transport: stubTransport({ status: 404, body: 'not found' }),
+    });
+    const err = await client.fetchJson('/ticket/api/online/x').catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(McpToolError);
+    expect(err).toMatchObject({ status: 404, kind: 'http', hint: expect.stringMatching(/id|etix\.com/i) });
+  });
+
+  it('a non-JSON 2xx body is an McpToolError with a hint', async () => {
+    const client = new EtixClient({
+      transport: stubTransport({ status: 200, body: '<html>surprise</html>' }),
+    });
+    const err = await client.fetchJson('/ticket/api/online/x').catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(McpToolError);
+    expect((err as Error).message).toMatch(/not JSON/);
+    expect(err).toMatchObject({ hint: expect.stringMatching(/etix\.com/i) });
   });
 
   it('postJson sends the body and parses the response', async () => {

@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { McpToolError } from '@chrischall/mcp-utils';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
@@ -125,6 +126,17 @@ describe('parseEventDetail', () => {
     expect(() => parseEventDetail('<html><body>nope</body></html>', 1)).toThrow(
       /could not parse/i
     );
+  });
+
+  it('the parse failure is an McpToolError carrying a hint', () => {
+    let err: unknown;
+    try {
+      parseEventDetail('<html><body>nope</body></html>', 1);
+    } catch (e) {
+      err = e;
+    }
+    expect(err).toBeInstanceOf(McpToolError);
+    expect(err).toMatchObject({ hint: expect.stringMatching(/etix_search|reload/i) });
   });
 });
 
@@ -315,6 +327,17 @@ describe('parseVenueDetail on a non-venue page', () => {
     expect(() => parseVenueDetail('<html><body>Not found</body></html>', 5)).toThrow(
       /Etix venue 5: could not parse/i
     );
+  });
+
+  it('the venue parse failure is an McpToolError carrying a hint', () => {
+    let err: unknown;
+    try {
+      parseVenueDetail('<html><body>Not found</body></html>', 5);
+    } catch (e) {
+      err = e;
+    }
+    expect(err).toBeInstanceOf(McpToolError);
+    expect(err).toMatchObject({ hint: expect.stringMatching(/etix_search|reload/i) });
   });
 
   it('still parses a page that has only the header Place (no dataLayer)', () => {
