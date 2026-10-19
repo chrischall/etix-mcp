@@ -35,3 +35,12 @@ egress:
   # direct mode. www.etix.com appears in src only as the base for URLs the
   # tools build and return.
   allow: []
+examples:
+  # Sample prompts for the public catalog. Every one is read-only and maps
+  # onto the real tools: etix_search -> etix_get_venue / etix_get_event.
+  - prompt: Search Etix for upcoming jazz shows and give me the event names with their ticket links.
+    note: Uses etix_search; returns a few top matches, not an exhaustive list.
+  - prompt: Look up the Lincoln Theatre on Etix and list its upcoming events with dates and start times.
+    note: Finds the venue with etix_search, then lists its events via etix_get_venue.
+  - prompt: What's the ticket price range for the next Marion Meadows show on Etix, and which venue is it at?
+    note: Chains etix_search into etix_get_event for prices, offer levels and venue.
