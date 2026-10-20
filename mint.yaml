@@ -1,13 +1,15 @@
 version: 1
 name: Etix
 slug: etix
+# BROWSER-BRIDGE MCP: it reaches its site through the user's signed-in tab
+# via the fetchproxy bridge, so a registration also needs runtime
+# fly-shared, bridge: true and a bridgePortEnv — registration fields this
+# manifest has no schema for. state.dataDir below is required for bridge and
+# is why it is declared.
 summary: >-
-  Etix event discovery for Claude — search events, venues & performers and
-  fetch event details BROWSER-BRIDGE MCP: it reaches its site through the
-  user's signed-in tab via the fetchproxy bridge, so a registration also
-  needs runtime fly-shared, bridge: true and a bridgePortEnv — registration
-  fields this manifest has no schema for. state.dataDir below is required
-  for bridge and is why it is declared.
+  Etix event discovery for Claude — search events, venues and performers, then
+  fetch event details, dates and ticket prices through your signed-in Etix
+  browser tab.
 env:
   - name: ETIX_WS_PORT
     required: false
