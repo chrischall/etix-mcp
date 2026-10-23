@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.9](https://github.com/chrischall/etix-mcp/compare/v1.1.8...v1.1.9) (2026-10-23)
+
+
+### Bug Fixes
+
+* **deps:** bump the production-dependencies group with 2 updates ([#159](https://github.com/chrischall/etix-mcp/issues/159)) ([84378a7](https://github.com/chrischall/etix-mcp/commit/84378a77b8c8f0638cfa0033215bedfeced0ae5e))
+
+
+### Documentation
+
+* **mint:** add sample prompts for the public catalog ([#155](https://github.com/chrischall/etix-mcp/issues/155)) ([da90ed0](https://github.com/chrischall/etix-mcp/commit/da90ed04861a1a7452679500c3844ba669424046))
+* **mint:** fit the catalog summary within 200 characters ([#157](https://github.com/chrischall/etix-mcp/issues/157)) ([7630a32](https://github.com/chrischall/etix-mcp/commit/7630a322a5d667f8241c4bef78331a4836580a80))
+
 ## [1.1.8](https://github.com/chrischall/etix-mcp/compare/v1.1.7...v1.1.8) (2026-10-16)
 
 
