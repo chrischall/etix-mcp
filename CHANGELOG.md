@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.10](https://github.com/chrischall/etix-mcp/compare/v1.1.9...v1.1.10) (2026-10-30)
+
+
+### Bug Fixes
+
+* **deps:** bump @fetchproxy/server ([#162](https://github.com/chrischall/etix-mcp/issues/162)) ([6a3a6e5](https://github.com/chrischall/etix-mcp/commit/6a3a6e5f0f77f72452620845055cb7cbee354da5))
+
 ## [1.1.9](https://github.com/chrischall/etix-mcp/compare/v1.1.8...v1.1.9) (2026-10-29)
 
 
