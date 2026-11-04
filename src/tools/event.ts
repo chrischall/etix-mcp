@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/server';
 import type { EtixClient } from '../client.js';
 import { minifiedResult } from '../mcp.js';
+import { familyMeta } from './hints.js';
 import { parseEventDetail } from '../parse.js';
 
 /**
@@ -29,6 +30,7 @@ export function registerEventTools(server: McpServer, client: EtixClient): void 
         idempotentHint: true,
         openWorldHint: true,
       },
+      _meta: familyMeta('lookup', { aliases: ['tickets', 'showtime', 'ticket prices', 'event details'] }),
       inputSchema: z.object({
         event_id: z
           .number()

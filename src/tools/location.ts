@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/server';
 import type { EtixClient } from '../client.js';
 import { minifiedResult } from '../mcp.js';
+import { familyMeta } from './hints.js';
 
 /**
  * `etix_find_location`: resolve a city or postal code to coordinates.
@@ -51,6 +52,7 @@ export function registerLocationTools(
         idempotentHint: true,
         openWorldHint: true,
       },
+      _meta: familyMeta('lookup', { aliases: ['near me', 'city', 'zip code'] }),
       inputSchema: z.object({
         query: z
           .string()

@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/server';
 import type { EtixClient } from '../client.js';
 import { minifiedResult } from '../mcp.js';
+import { familyMeta } from './hints.js';
 import { parseVenueDetail } from '../parse.js';
 
 /**
@@ -29,6 +30,7 @@ export function registerVenueTools(server: McpServer, client: EtixClient): void 
         idempotentHint: true,
         openWorldHint: true,
       },
+      _meta: familyMeta('whats-on', { aliases: ['venue', 'playing', 'upcoming shows', 'lineup'] }),
       inputSchema: z.object({
         venue_id: z
           .number()

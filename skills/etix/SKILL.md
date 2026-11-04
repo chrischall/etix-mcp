@@ -54,6 +54,12 @@ Open [etix.com](https://www.etix.com/ticket/) in your browser and let it finish 
 | `etix_find_location` | Resolve a city or postal code to coordinates (building block for location-based browsing). |
 | `etix_healthcheck` | End-to-end bridge check — round-trips `/robots.txt` and reports which hop failed (bridge down vs. extension not connected vs. DataDome challenge on your tab). Call when other tools fail. |
 
+## In context groups
+
+On a host that reads context-group hints (mcp-host's `family` group), every tool except `etix_healthcheck` carries `_meta.mint` with `domain: family`. Etix is public discovery with nothing of yours to list (no account, children or saved venues), so **no tool is canonical and none declares a subject**: a bare "what's on this weekend?" fan-out never calls Etix. `etix_search`, `etix_get_event` and `etix_find_location` are `lookup`; `etix_get_venue` is a non-canonical `whats-on` for a venue the person names.
+
+A compound ask reaches Etix only when it names something to search, e.g. "anything on the family calendar this weekend, and are there tickets left for the jazz show at Middle C?" — the group answers its own canonical reads, then calls `etix_search` → `etix_get_venue` / `etix_get_event` for the named show. Every call rides the ContextMint Bridge, so with no etix.com tab open the group answers that Etix "needs your browser open" rather than an error.
+
 ## Acknowledgement of Terms
 
 By using this MCP server, you acknowledge and agree to the following:
