@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/server';
 import type { EtixClient } from '../client.js';
 import { minifiedResult } from '../mcp.js';
+import { familyMeta } from './hints.js';
 import { parseSuggest } from '../parse.js';
 
 /**
@@ -31,6 +32,7 @@ export function registerSearchTools(server: McpServer, client: EtixClient): void
         idempotentHint: true,
         openWorldHint: true,
       },
+      _meta: familyMeta('lookup', { aliases: ['tickets', 'concerts', 'shows', 'events', 'gigs', 'performers'] }),
       inputSchema: z.object({
         keywords: z
           .string()
