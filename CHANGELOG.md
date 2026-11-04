@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/chrischall/etix-mcp/compare/v1.1.9...v1.2.0) (2026-11-04)
+
+
+### Features
+
+* context-group hints ([#164](https://github.com/chrischall/etix-mcp/issues/164)) ([0d8106b](https://github.com/chrischall/etix-mcp/commit/0d8106b3171b4079494c21d564dd44e771d9a45c))
+
+
+### Bug Fixes
+
+* **deps:** bump @fetchproxy/server ([#162](https://github.com/chrischall/etix-mcp/issues/162)) ([6a3a6e5](https://github.com/chrischall/etix-mcp/commit/6a3a6e5f0f77f72452620845055cb7cbee354da5))
+
 ## [1.1.9](https://github.com/chrischall/etix-mcp/compare/v1.1.8...v1.1.9) (2026-10-29)
 
 
