@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.1](https://github.com/chrischall/etix-mcp/compare/v1.2.0...v1.2.1) (2026-11-13)
+
+
+### Bug Fixes
+
+* **deps:** bump node-html-parser ([#167](https://github.com/chrischall/etix-mcp/issues/167)) ([7936055](https://github.com/chrischall/etix-mcp/commit/7936055bc4d82e1ac3f69d01dee13d2798c3d507))
+* **deps:** bump the production-dependencies group with 3 updates ([#169](https://github.com/chrischall/etix-mcp/issues/169)) ([9057e1b](https://github.com/chrischall/etix-mcp/commit/9057e1b13265bfb15a03495fcad3af40597423cb))
+
 ## [1.2.0](https://github.com/chrischall/etix-mcp/compare/v1.1.9...v1.2.0) (2026-11-04)
 
 
